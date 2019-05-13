@@ -40,14 +40,13 @@ end
 -- }}}
 
 -- {{{ Variable definitions
--- Themes define colours, icons, font and wallpapers.
-local themes_path = gears.filesystem.get_xdg_config_home() .. "awesome/themes"
+local themes_path = gears.filesystem.get_configuration_dir() .. "themes"
 beautiful.init(themes_path .. "/lightcircle/theme.lua")
 
--- This is used later as the default terminal and editor to run.
 local terminal   = "termite"
 -- local terminal   = "urxvt -bg black -fg '#1793D1'"
 local editor     = os.getenv("EDITOR") or "vim"
+local gui_editor = "atom"
 local editor_cmd = terminal .. " -e " .. editor
 local modkey     = "Mod4"
 
@@ -87,19 +86,21 @@ mymainmenu = awful.menu({ items = { { "awesome", myawesomemenu, beautiful.awesom
                                   }
                         })
 
-mylauncher = awful.widget.launcher({ image = beautiful.awesome_icon,
+mylauncher = awful.widget.launcher({ image = beautiful.arch_icon,
                                      menu = mymainmenu })
 
 -- Menubar configuration
 menubar.utils.terminal = terminal -- Set the terminal for applications that require it
 -- }}}
 
+--[[
 -- Keyboard map indicator and switcher
--- mykeyboardlayout = awful.widget.keyboardlayout()
+mykeyboardlayout = awful.widget.keyboardlayout()
+--]]
 
 -- {{{ Wibar
 -- Create a textclock widget
-mytextclock = wibox.widget.textclock()
+local mytextclock = wibox.widget.textclock(" %H:%M ")
 
 -- Create a wibox for each screen and add it
 local taglist_buttons = gears.table.join(
