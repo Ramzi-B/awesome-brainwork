@@ -7,7 +7,7 @@ local wibox                                         = require("wibox")
 local awful                                         = require("awful")
 local dpi                                           = require("beautiful.xresources").apply_dpi
 local gfs                                           = require("gears.filesystem")
-
+local my_table                                      = awful.util.table or gears.table
 local theme                                         = {}
 -- theme.confdir                                    = gfs.get_xdg_config_home() .. "awesome/themes/lightcircle"
 theme.confdir                                       = gfs.get_configuration_dir() .. "themes/lightcircle"
@@ -122,7 +122,7 @@ function theme.when_screen_connect(s)
     -- Create an imagebox widget which will contain an icon indicating which layout we're using.
     -- We need one layoutbox per screen.
     s.mylayoutbox = awful.widget.layoutbox(s)
-    s.mylayoutbox:buttons(gears.table.join(
+    s.mylayoutbox:buttons(my_table.join(
         awful.button({ }, 1, function () awful.layout.inc( 1) end),
         awful.button({ }, 3, function () awful.layout.inc(-1) end),
         awful.button({ }, 4, function () awful.layout.inc( 1) end),
@@ -132,14 +132,14 @@ function theme.when_screen_connect(s)
     s.mytaglist = awful.widget.taglist {
         screen  = s,
         filter  = awful.widget.taglist.filter.all,
-        buttons = taglist_buttons
+        buttons = awful.util.taglist_buttons
     }
 
     -- Create a tasklist widget
     s.mytasklist = awful.widget.tasklist {
         screen  = s,
         filter  = awful.widget.tasklist.filter.currenttags,
-        buttons = tasklist_buttons
+        buttons = awful.util.tasklist_buttons
     }
 
     -- Create the wibox
