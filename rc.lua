@@ -12,6 +12,7 @@ local naughty       = require("naughty")
 local menubar       = require("menubar")
 local hotkeys_popup = require("awful.hotkeys_popup")
                       require("awful.hotkeys_popup.keys")
+local my_table      = awful.util.table or gears.table                    
 -- }}}
 
 -- {{{ Error handling
@@ -105,7 +106,7 @@ mykeyboardlayout = awful.widget.keyboardlayout()
 --]]
 
 -- Create a wibox for each screen and add it
-local taglist_buttons = gears.table.join(
+awful.util.taglist_buttons = my_table.join(
     awful.button({ }, 1, function(t) t:view_only() end),
     awful.button({ modkey }, 1, function(t)
         if client.focus then client.focus:move_to_tag(t) end
@@ -118,7 +119,7 @@ local taglist_buttons = gears.table.join(
     awful.button({ }, 5, function(t) awful.tag.viewprev(t.screen) end)
 )
 
-local tasklist_buttons = gears.table.join(
+awful.util.tasklist_buttons = my_table.join(
     awful.button({ }, 1, function (c)
         if c == client.focus then
             c.minimized = true
@@ -144,15 +145,15 @@ end)
 awful.screen.connect_for_each_screen(function(s) beautiful.when_screen_connect(s) end)
 
 -- {{{ Mouse bindings
-root.buttons(gears.table.join(
-    awful.button({ }, 3, function () mymainmenu:toggle() end),
+root.buttons(my_table.join(
+    awful.button({ }, 3, function () awful.util.mymainmenu:toggle() end),
     awful.button({ }, 4, awful.tag.viewnext),
     awful.button({ }, 5, awful.tag.viewprev)
 ))
 -- }}}
 
 -- {{{ Key bindings
-globalkeys = gears.table.join(
+globalkeys = my_table.join(
     awful.key({ modkey,           }, "s", hotkeys_popup.show_help,
         { description="show help", group="awesome" }),
     awful.key({ modkey,           }, "Left", awful.tag.viewprev,
@@ -235,7 +236,7 @@ globalkeys = gears.table.join(
         { description = "show the menubar", group = "launcher" })
 )
 
-clientkeys = gears.table.join(
+clientkeys = my_table.join(
     awful.key({ modkey,           }, "f", function (c)
         c.fullscreen = not c.fullscreen
         c:raise()
@@ -285,7 +286,7 @@ clientkeys = gears.table.join(
 -- Be careful: we use keycodes to make it work on any keyboard layout.
 -- This should map on the top row of your keyboard, usually 1 to 9.
 for i = 1, 9 do
-    globalkeys = gears.table.join(globalkeys,
+    globalkeys = my_table.join(globalkeys,
         -- View tag only.
         awful.key({ modkey }, "#" .. i + 9, function ()
             local screen = awful.screen.focused()
@@ -319,7 +320,7 @@ for i = 1, 9 do
     )
 end
 
-clientbuttons = gears.table.join(
+clientbuttons = my_table.join(
     awful.button({ }, 1, function (c)
         c:emit_signal("request::activate", "mouse_click", { raise = true })
     end),
@@ -413,7 +414,7 @@ end)
 -- Add a titlebar if titlebars_enabled is set to true in the rules.
 client.connect_signal("request::titlebars", function(c)
     -- buttons for the titlebar
-    local buttons = gears.table.join(
+    local buttons = my_table.join(
         awful.button({ }, 1, function()
             c:emit_signal("request::activate", "titlebar", {raise = true})
             awful.mouse.client.move(c)
