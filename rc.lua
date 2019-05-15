@@ -12,6 +12,7 @@ local naughty       = require("naughty")
 local menubar       = require("menubar")
 local hotkeys_popup = require("awful.hotkeys_popup")
                       require("awful.hotkeys_popup.keys")
+local dpi           = beautiful.xresources.apply_dpi                      
 local my_table      = awful.util.table or gears.table                    
 -- }}}
 
@@ -49,14 +50,14 @@ end
 local themes_path = gears.filesystem.get_configuration_dir() .. "themes"
 beautiful.init(themes_path .. "/lightcircle/theme.lua")
 
-local terminal   = "termite"
 -- local terminal   = "urxvt -bg black -fg '#1793D1'"
+local terminal   = "termite"
 local editor     = os.getenv("EDITOR") or "vim"
 local gui_editor = "atom"
 local editor_cmd = terminal .. " -e " .. editor
 local modkey     = "Mod4"
 
-awful.util.tagnames = { "1", "2", "3", "4", "5" }
+awful.util.tagnames = { " 1 ", " 2 ", " 3 ", " 4 ", " 5 " }
 
 -- Table of layouts to cover with awful.layout.inc, order matters.
 awful.layout.layouts = {
@@ -245,7 +246,7 @@ clientkeys = my_table.join(
     awful.key({ modkey, "Shift"   }, "c", function (c) c:kill()
     end,
         { description = "close", group = "client" }),
-    awful.key({ modkey, "Control" }, "space",  awful.client.floating.toggle                     ,
+    awful.key({ modkey, "Control" }, "space",  awful.client.floating.toggle,
         { description = "toggle floating", group = "client" }),
     awful.key({ modkey, "Control" }, "Return", function (c)
         c:swap(awful.client.getmaster())
@@ -342,18 +343,21 @@ root.keys(globalkeys)
 -- Rules to apply to new clients (through the "manage" signal).
 awful.rules.rules = {
     -- All clients will match this rule.
-    { rule = { },
-      properties = { border_width = beautiful.border_width,
-                     border_color = beautiful.border_normal,
-                     focus = awful.client.focus.filter,
-                     raise = true,
-                     keys = clientkeys,
-                     buttons = clientbuttons,
-                     screen = awful.screen.preferred,
-                     placement = awful.placement.no_overlap+awful.placement.no_offscreen
-     }
+    { 
+        rule = { },
+        properties = { 
+            border_width = beautiful.border_width,
+            border_color = beautiful.border_normal,
+            focus = awful.client.focus.filter,
+            raise = true,
+            keys = clientkeys,
+            buttons = clientbuttons,
+            screen = awful.screen.preferred,
+            placement = awful.placement.no_overlap+awful.placement.no_offscreen
+        }
     },
 
+    --[[
     -- Floating clients.
     { rule_any = {
         instance = {
@@ -384,15 +388,19 @@ awful.rules.rules = {
           "pop-up",       -- e.g. Google Chrome's (detached) Developer Tools.
         }
       }, properties = { floating = true }},
-
+    --]]
+      
     -- Add titlebars to normal clients and dialogs
-    { rule_any = {type = { "normal", "dialog" }
-      }, properties = { titlebars_enabled = true }
+    {
+        rule_any = { type = { "normal", "dialog" }},
+        properties = { titlebars_enabled = true }
     },
 
     -- Set Firefox to always map on the tag named "2" on screen 1.
-    -- { rule = { class = "Firefox" },
-    --   properties = { screen = 1, tag = "2" } },
+    { 
+        rule = { class = "Firefox" },   
+        properties = { screen = 1, tag = "2" }
+    },
 }
 -- }}}
 
@@ -416,16 +424,16 @@ client.connect_signal("request::titlebars", function(c)
     -- buttons for the titlebar
     local buttons = my_table.join(
         awful.button({ }, 1, function()
-            c:emit_signal("request::activate", "titlebar", {raise = true})
+            c:emit_signal("request::activate", "titlebar", { raise = true })
             awful.mouse.client.move(c)
         end),
         awful.button({ }, 3, function()
-            c:emit_signal("request::activate", "titlebar", {raise = true})
+            c:emit_signal("request::activate", "titlebar", { raise = true })
             awful.mouse.client.resize(c)
         end)
     )
 
-    awful.titlebar(c) : setup {
+    awful.titlebar(c, { size = dpi(18) }) : setup {
         { -- Left
             awful.titlebar.widget.iconwidget(c),
             buttons = buttons,

@@ -8,6 +8,7 @@ local awful                                         = require("awful")
 local dpi                                           = require("beautiful.xresources").apply_dpi
 local gfs                                           = require("gears.filesystem")
 local my_table                                      = awful.util.table or gears.table
+
 local theme                                         = {}
 -- theme.confdir                                    = gfs.get_xdg_config_home() .. "awesome/themes/lightcircle"
 theme.confdir                                       = gfs.get_configuration_dir() .. "themes/lightcircle"
@@ -34,7 +35,7 @@ theme.border_normal                                 = "#000000"
 theme.border_focus                                  = "#535d6c"
 theme.border_marked                                 = "#91231c"
 
-theme.taglist_bg_focus                              = theme.bg_minimize
+theme.taglist_bg_focus                              = theme.bg_normal
 theme.taglist_fg_focus                              = theme.bg_urgent
 
 theme.tasklist_disable_icon                         = false
@@ -45,6 +46,10 @@ theme.arch_icon                                     = theme.confdir .. "/icons/a
 theme.menu_submenu_icon                             = theme.confdir .. "/icons/submenuplay.png"
 theme.menu_height                                   = dpi(16)
 theme.menu_width                                    = dpi(120)
+theme.menu_border_width                             = dpi(0)
+
+theme.taglist_squares_sel                           = gears.surface.load_from_shape(dpi(10), dpi(2), gears.shape.rectangle, theme.fg_focus) 
+theme.taglist_squares_unsel                         = gears.surface.load_from_shape(dpi(10), dpi(2), gears.shape.rectangle, theme.bg_minimize) 
 
 theme.titlebar_close_button_normal                  = theme.confdir .. "/titlebar/close_normal.png"
 theme.titlebar_close_button_focus                   = theme.confdir .. "/titlebar/close_focus.png"
@@ -84,21 +89,6 @@ theme.layout_cornerne                               = theme.confdir .. "/layouts
 theme.layout_cornersw                               = theme.confdir .. "/layouts/cornersww.png"
 theme.layout_cornerse                               = theme.confdir .. "/layouts/cornersew.png"
 
--- Generate taglist squares:
--- local taglist_square_size = dpi(4)
--- theme.taglist_squares_sel = theme_assets.taglist_squares_sel(
---    taglist_square_size, theme.fg_normal
--- )
--- theme.taglist_squares_unsel = theme_assets.taglist_squares_unsel(
---    taglist_square_size, theme.fg_normal
--- )
-
-
--- local mylauncher = awful.widget.launcher({
-    -- image = theme.arch_icon,
-    -- menu = mymainmenu
--- })
-
 -- Widget
 -- Create a textclock widget
 local mytextclock = wibox.widget.textclock(" %H:%M ")
@@ -119,6 +109,7 @@ function theme.when_screen_connect(s)
 
     -- Create a promptbox for each screen
     s.mypromptbox = awful.widget.prompt()
+
     -- Create an imagebox widget which will contain an icon indicating which layout we're using.
     -- We need one layoutbox per screen.
     s.mylayoutbox = awful.widget.layoutbox(s)
@@ -128,6 +119,7 @@ function theme.when_screen_connect(s)
         awful.button({ }, 4, function () awful.layout.inc( 1) end),
         awful.button({ }, 5, function () awful.layout.inc(-1) end)
     ))
+
     -- Create a taglist widget
     s.mytaglist = awful.widget.taglist {
         screen  = s,
