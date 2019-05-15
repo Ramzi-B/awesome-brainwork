@@ -167,7 +167,7 @@ globalkeys = my_table.join(
         { description = "focus next by index", group = "client" }),
     awful.key({ modkey,           }, "k", function () awful.client.focus.byidx(-1) end,
         { description = "focus previous by index", group = "client" }),
-    awful.key({ modkey,           }, "w", function () mymainmenu:show() end,
+    awful.key({ modkey,           }, "w", function () awful.util.mymainmenu:show() end,
         { description = "show main menu", group = "awesome" }),
 
     -- Layout manipulation
@@ -357,42 +357,9 @@ awful.rules.rules = {
         }
     },
 
-    --[[
-    -- Floating clients.
-    { rule_any = {
-        instance = {
-          "DTA",  -- Firefox addon DownThemAll.
-          "copyq",  -- Includes session name in class.
-          "pinentry",
-        },
-        class = {
-          "Arandr",
-          "Blueman-manager",
-          "Gpick",
-          "Kruler",
-          "MessageWin",  -- kalarm.
-          "Sxiv",
-          "Tor Browser", -- Needs a fixed window size to avoid fingerprinting by screen size.
-          "Wpa_gui",
-          "veromix",
-          "xtightvncviewer"},
-
-        -- Note that the name property shown in xprop might be set slightly after creation of the client
-        -- and the name shown there might not match defined rules here.
-        name = {
-          "Event Tester",  -- xev.
-        },
-        role = {
-          "AlarmWindow",  -- Thunderbird's calendar.
-          "ConfigManager",  -- Thunderbird's about:config.
-          "pop-up",       -- e.g. Google Chrome's (detached) Developer Tools.
-        }
-      }, properties = { floating = true }},
-    --]]
-      
     -- Add titlebars to normal clients and dialogs
     {
-        rule_any = { type = { "normal", "dialog" }},
+        rule_any = { type = { "normal", "dialog" } },
         properties = { titlebars_enabled = true }
     },
 
@@ -461,9 +428,20 @@ end)
 
 -- Enable sloppy focus, so that focus follows mouse.
 client.connect_signal("mouse::enter", function(c)
-    c:emit_signal("request::activate", "mouse_enter", {raise = false})
+    c:emit_signal("request::activate", "mouse_enter", { raise = true })
 end)
 
-client.connect_signal("focus", function(c) c.border_color = beautiful.border_focus end)
+client.connect_signal("focus", function(c)
+    if c.maximized then
+        c.border_width = dpi(0)
+    elseif #awful.screen.focused().clients > 1 then
+        c.border_width = beautiful.border_width
+        c.border_color = beautiful.border_focus
+    else
+        c.border_width = dpi(0)
+    end
+end)
+
 client.connect_signal("unfocus", function(c) c.border_color = beautiful.border_normal end)
+-- client.connect_signal("unfocus", function(c) c.border_width = dpi(0) end)
 -- }}}

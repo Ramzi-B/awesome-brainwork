@@ -17,6 +17,7 @@ theme.wallpaper                                     = theme.confdir .. "/wallpap
 theme.font                                          = "TerminessTTFNerdFontMono 9.5"
 theme.icon_theme                                    = "/usr/share/icons/Papirus-Dark"
 theme.useless_gap                                   = dpi(4)
+theme.gap_single_client                             = true 
 
 theme.bg_normal                                     = "#222222AA"
 theme.bg_focus                                      = "#333333"
@@ -35,10 +36,15 @@ theme.border_normal                                 = "#000000"
 theme.border_focus                                  = "#535d6c"
 theme.border_marked                                 = "#91231c"
 
+theme.prompt_bg                                     = "#FB0124"
+theme.prompt_fg                                     = "#373B43"
+
 theme.taglist_bg_focus                              = theme.bg_normal
 theme.taglist_fg_focus                              = theme.bg_urgent
 
 theme.tasklist_disable_icon                         = false
+theme.tasklist_plain_task_name                      = false
+theme.tasklist_disable_task_name                    = true
 
 theme.awesome_icon                                  = theme.confdir .. "/icons/awesome.png"
 theme.arch_icon                                     = theme.confdir .. "/icons/arch.png"
