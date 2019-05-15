@@ -2,45 +2,49 @@
 -- Lightcircle Awesome WM theme | github.com/Ramzi-B --
 -------------------------------------------------------
 
-local gears            = require("gears")
-local wibox            = require("wibox")
-local dpi              = require("beautiful.xresources").apply_dpi
-local gfs              = require("gears.filesystem")
+local gears                                         = require("gears")
+local wibox                                         = require("wibox")
+local awful                                         = require("awful")
+local dpi                                           = require("beautiful.xresources").apply_dpi
+local gfs                                           = require("gears.filesystem")
+local my_table                                      = awful.util.table or gears.table
+local theme                                         = {}
+-- theme.confdir                                    = gfs.get_xdg_config_home() .. "awesome/themes/lightcircle"
+theme.confdir                                       = gfs.get_configuration_dir() .. "themes/lightcircle"
+theme.wallpaper                                     = theme.confdir .. "/wallpaper/background.jpg"
 
-local theme            = {}
--- theme.confdir          = gfs.get_xdg_config_home() .. "awesome/themes/lightcircle"
-theme.confdir          = gfs.get_configuration_dir() .. "themes/lightcircle"
-theme.wallpaper        = theme.confdir .. "/wallpaper/background.jpg"
+theme.font                                          = "TerminessTTFNerdFontMono 9.5"
+theme.icon_theme                                    = "/usr/share/icons/Papirus-Dark"
+theme.useless_gap                                   = dpi(4)
 
-theme.font             = "TerminessTTFNerdFontMono 9"
-theme.icon_theme       = "/usr/share/icons/Papirus-Dark" 
-theme.useless_gap      = dpi(4)
+theme.bg_normal                                     = "#222222AA"
+theme.bg_focus                                      = "#333333"
+theme.bg_urgent                                     = "#ff0000"
+theme.bg_minimize                                   = "#444444"
+theme.bg_systray                                    = theme.bg_normal
+theme.systray_icon_spacing                          = dpi(2)
 
-theme.bg_normal        = "#222222AA"
-theme.bg_focus         = "#333333"
-theme.bg_urgent        = "#ff0000"
-theme.bg_minimize      = "#444444"
-theme.bg_systray       = theme.bg_normal
+theme.fg_normal                                     = "#aaaaaa"
+theme.fg_focus                                      = "#ffffff"
+theme.fg_urgent                                     = "#ffffff"
+theme.fg_minimize                                   = "#ffffff"
 
-theme.fg_normal        = "#aaaaaa"
-theme.fg_focus         = "#ffffff"
-theme.fg_urgent        = "#ffffff"
-theme.fg_minimize      = "#ffffff"
+theme.border_width                                  = dpi(1)
+theme.border_normal                                 = "#000000"
+theme.border_focus                                  = "#535d6c"
+theme.border_marked                                 = "#91231c"
 
-theme.border_width     = dpi(1)
-theme.border_normal    = "#000000"
-theme.border_focus     = "#535d6c"
-theme.border_marked    = "#91231c"
+theme.taglist_bg_focus                              = theme.bg_minimize
+theme.taglist_fg_focus                              = theme.bg_urgent
 
-theme.taglist_bg_focus = theme.bg_minimize
-theme.taglist_fg_focus = theme.bg_urgent
+theme.tasklist_disable_icon                         = false
 
 theme.awesome_icon                                  = theme.confdir .. "/icons/awesome.png"
 theme.arch_icon                                     = theme.confdir .. "/icons/arch.png"
 
 theme.menu_submenu_icon                             = theme.confdir .. "/icons/submenuplay.png"
-theme.menu_height                                   = dpi(15)
-theme.menu_width                                    = dpi(100)
+theme.menu_height                                   = dpi(16)
+theme.menu_width                                    = dpi(120)
 
 theme.titlebar_close_button_normal                  = theme.confdir .. "/titlebar/close_normal.png"
 theme.titlebar_close_button_focus                   = theme.confdir .. "/titlebar/close_focus.png"
@@ -88,5 +92,77 @@ theme.layout_cornerse                               = theme.confdir .. "/layouts
 -- theme.taglist_squares_unsel = theme_assets.taglist_squares_unsel(
 --    taglist_square_size, theme.fg_normal
 -- )
+
+
+-- local mylauncher = awful.widget.launcher({
+    -- image = theme.arch_icon,
+    -- menu = mymainmenu
+-- })
+
+-- Widget
+-- Create a textclock widget
+local mytextclock = wibox.widget.textclock(" %H:%M ")
+mytextclock.font = "TerminessTTFNerdFontMono bold 10.5"
+
+-- Launcher
+local mylauncher = awful.widget.button({ image = theme.arch_icon })
+mylauncher:connect_signal("button::press", function() awful.util.mymainmenu:toggle() end)
+
+function theme.when_screen_connect(s)
+    -- If wallpaper is a function, call it with the screen
+    local wallpaper = theme.wallpaper
+    if type(wallpaper) == "function" then wallpaper = wallpaper(s) end
+    gears.wallpaper.maximized(wallpaper, s, true)
+
+    -- Tags
+    awful.tag(awful.util.tagnames, s, awful.layout.layouts)
+
+    -- Create a promptbox for each screen
+    s.mypromptbox = awful.widget.prompt()
+    -- Create an imagebox widget which will contain an icon indicating which layout we're using.
+    -- We need one layoutbox per screen.
+    s.mylayoutbox = awful.widget.layoutbox(s)
+    s.mylayoutbox:buttons(my_table.join(
+        awful.button({ }, 1, function () awful.layout.inc( 1) end),
+        awful.button({ }, 3, function () awful.layout.inc(-1) end),
+        awful.button({ }, 4, function () awful.layout.inc( 1) end),
+        awful.button({ }, 5, function () awful.layout.inc(-1) end)
+    ))
+    -- Create a taglist widget
+    s.mytaglist = awful.widget.taglist {
+        screen  = s,
+        filter  = awful.widget.taglist.filter.all,
+        buttons = awful.util.taglist_buttons
+    }
+
+    -- Create a tasklist widget
+    s.mytasklist = awful.widget.tasklist {
+        screen  = s,
+        filter  = awful.widget.tasklist.filter.currenttags,
+        buttons = awful.util.tasklist_buttons
+    }
+
+    -- Create the wibox
+    s.mywibox = awful.wibar({ position = "top", height = dpi(18), screen = s })
+
+    -- Add widgets to the wibox
+    s.mywibox:setup {
+        layout = wibox.layout.align.horizontal,
+        { -- Left widgets
+            layout = wibox.layout.fixed.horizontal,
+            mylauncher,
+            s.mytaglist,
+            s.mypromptbox,
+        },
+        s.mytasklist, -- Middle widget
+        { -- Right widgets
+            layout = wibox.layout.fixed.horizontal,
+            -- mykeyboardlayout,
+            wibox.widget.systray(),
+            mytextclock,
+            s.mylayoutbox,
+        },
+    }
+end
 
 return theme
