@@ -1,12 +1,9 @@
--- Only allow symbols available in all versions
+-- Only allow symbols available in all Lua versions
 std = "min"
 
 read_globals = {
-	"awesome",
-	"client",
-	"globalkeys",
-	"clientkeys",
-	"clientbuttons",
-	"root",
-  "screen",
+    "awesome",
+    "client",
+    "root",
+    "screen",
 }
