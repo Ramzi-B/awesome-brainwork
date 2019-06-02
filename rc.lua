@@ -16,6 +16,7 @@ local dpi           = beautiful.xresources.apply_dpi
 local my_table      = awful.util.table or gears.table
 local gfs           = gears.filesystem
 -- }}}
+-- local test          = require("test")
 
 -- {{{ Error handling
 -- Check if awesome encountered an error during startup and fell back to
@@ -52,33 +53,58 @@ local themes_path = gfs.get_configuration_dir() .. "themes"
 beautiful.init(themes_path .. "/lightcircle/theme.lua")
 
 -- local terminal   = "urxvt -bg black -fg '#1793D1'"
-local terminal   = "termite"
+local terminal   = "termite" -- termite -e vim (to fix don't work)
 local editor     = os.getenv("EDITOR") or "vim"
 local gui_editor = "atom"
 local editor_cmd = terminal .. " -e " .. editor
 local modkey     = "Mod4"
 
-awful.util.tagnames = { " 1 ", " 2 ", " 3 ", " 4 ", " 5 " }
+-- awful.util.tagnames = { " 1 " , " 2 ", " 3 ", " 4 ", " 5 " }
+awful.util.tagnames = { " Office ", " URxvt ", " Web ", " IDE ", " DEV " }
 
 -- Table of layouts to cover with awful.layout.inc, order matters.
-awful.layout.layouts = {
-    awful.layout.suit.floating,
-    awful.layout.suit.tile,
-    awful.layout.suit.tile.left,
-    awful.layout.suit.tile.bottom,
-    awful.layout.suit.tile.top,
-    awful.layout.suit.fair,
-    awful.layout.suit.fair.horizontal,
-    -- awful.layout.suit.spiral,
-    -- awful.layout.suit.spiral.dwindle,
-    -- awful.layout.suit.max,
-    -- awful.layout.suit.max.fullscreen,
-    -- awful.layout.suit.magnifier,
-    -- awful.layout.suit.corner.nw,
-    -- awful.layout.suit.corner.ne,
-    -- awful.layout.suit.corner.sw,
-    -- awful.layout.suit.corner.se,
+ awful.layout.layouts = {
+     awful.layout.suit.floating,
+     awful.layout.suit.tile,
+     awful.layout.suit.tile.left,
+     awful.layout.suit.tile.bottom,
+     awful.layout.suit.tile.top,
+     awful.layout.suit.fair,
+     awful.layout.suit.fair.horizontal,
+     awful.layout.suit.spiral,
+     awful.layout.suit.spiral.dwindle,
+     awful.layout.suit.max,
+     awful.layout.suit.max.fullscreen,
+     awful.layout.suit.magnifier,
+     awful.layout.suit.corner.nw,
+     awful.layout.suit.corner.ne,
+     awful.layout.suit.corner.sw,
+     awful.layout.suit.corner.se,
 }
+--[[
+awful.tag.add("Office", {
+    icon = beautiful.awesome_icon,
+    layout = awful.layout.suit.floating,
+    master_fill_policy = "master_width_factor",
+    gap_single_client = true,
+    gap = dpi(15),
+    screen = s,
+    selected = true,
+})
+
+awful.tag.add("Term", {
+    screen = s,
+    icon = beautiful.arch_icon,
+    layout = awful.layout.suit.floating,
+
+})
+
+awful.tag.add("IDE", {
+    screen = s,
+    icon = "",
+    layout = awful.layout.suit.tile.left
+})
+--]]
 -- }}}
 
 -- {{{ Menu
@@ -158,7 +184,7 @@ root.buttons(my_table.join(
 -- {{{ Key bindings
 globalkeys = my_table.join(
     awful.key({ modkey,           }, "s", hotkeys_popup.show_help,
-        { description="show help", group="awesome" }),
+        { description = "show help", group = "awesome" }),
     awful.key({ modkey,           }, "Left", awful.tag.viewprev,
         { description = "view previous", group = "tag" }),
     awful.key({ modkey,           }, "Right", awful.tag.viewnext,
@@ -184,8 +210,7 @@ globalkeys = my_table.join(
     awful.key({ modkey,           }, "u", awful.client.urgent.jumpto,
         { description = "jump to urgent client", group = "client" }),
     awful.key({ modkey,           }, "Tab", function() awful.client.focus.history.previous()
-        if client.focus then client.focus:raise() end
-    end, 
+        if client.focus then client.focus:raise() end end, 
         { description = "go back", group = "client" }),
 
     -- Standard program
@@ -402,9 +427,7 @@ client.connect_signal("request::titlebars", function(c)
         end)
     )
 
-    -- local tb = { top = "", right = "", left = "",  bottom = "" }
-
-    awful.titlebar(c, { size = dpi(18) }) : setup {
+    awful.titlebar(c, { size = dpi(16), position = "top" }) : setup {
         { -- Left
             awful.titlebar.widget.iconwidget(c),
             buttons = buttons,
