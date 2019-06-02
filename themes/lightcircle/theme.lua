@@ -9,15 +9,19 @@ local dpi                                           = require("beautiful.xresour
 local gfs                                           = require("gears.filesystem")
 local my_table                                      = awful.util.table or gears.table
 local surface                                       = gears.surface.load_from_shape
+local shape                                         = gears.shape
+
 
 local theme                                         = {}
 -- theme.confdir                                    = gfs.get_xdg_config_home() .. "awesome/themes/lightcircle"
 theme.confdir                                       = gfs.get_configuration_dir() .. "themes/lightcircle"
 theme.wallpaper                                     = theme.confdir .. "/wallpaper/background.jpg"
 
-theme.font                                          = "TerminessTTFNerdFontMono 9.5"
+theme.font                                          = "TerminessTTFNerdFontMono 10"
 theme.icon_theme                                    = "Papirus-Dark"
 theme.useless_gap                                   = dpi(4)
+
+theme.transparent                                   = "#00000000"
 
 theme.bg_normal                                     = "#222222AA"
 theme.bg_focus                                      = "#333333"
@@ -36,11 +40,12 @@ theme.border_normal                                 = "#333333AA"
 theme.border_focus                                  = "#535d6c"
 theme.border_marked                                 = "#91231c"
 
--- theme.taglist_bg_focus                              = theme.bg_normal
-theme.taglist_bg_focus                              = theme.bg_normal
-theme.taglist_fg_focus                              = theme.bg_urgent
+theme.taglist_bg_focus                              = theme.transparent 
+theme.taglist_fg_focus                              = "#d26937" 
 
 theme.tasklist_disable_icon                         = false
+theme.tasklist_plain_task_name                      = false 
+theme.tasklist_disable_task_name                    = true
 
 theme.awesome_icon                                  = theme.confdir .. "/icons/awesome.png"
 theme.arch_icon                                     = theme.confdir .. "/icons/arch.png"
@@ -88,8 +93,14 @@ theme.layout_cornerne                               = theme.confdir .. "/layouts
 theme.layout_cornersw                               = theme.confdir .. "/layouts/cornersww.png"
 theme.layout_cornerse                               = theme.confdir .. "/layouts/cornersew.png"
 
-theme.taglist_squares_sel                           = surface(dpi(10), dpi(2), gears.shape.rectangle, theme.fg_focus) 
-theme.taglist_squares_unsel                         = surface(dpi(10), dpi(2), gears.shape.rectangle, theme.bg_minimize) 
+theme.notification_shape                            = shape.infobubble
+theme.notification_margin                           = 20
+theme.notification_bg                               = "#2E3440"
+-- theme.notification_fg                               = "#D26937"
+theme.notification_fg                               = "#4C566A"
+
+theme.taglist_squares_sel                           = surface(dpi(5), dpi(5), shape.circle, theme.taglist_fg_focus) 
+theme.taglist_squares_unsel                         = surface(dpi(10), dpi(5), shape.rounded_bar, theme.bg_minimize) 
 
 -- Widget
 -- Create a textclock widget
@@ -100,7 +111,32 @@ mytextclock.font = "TerminessTTFNerdFontMono bold 10.5"
 local mylauncher = awful.widget.button({ image = theme.arch_icon })
 mylauncher:connect_signal("button::press", function() awful.util.mymainmenu:toggle() end)
 
-function theme.when_screen_connect(s)
+
+--[[
+-- Slider
+local slider = wibox.widget {
+    bar_shape           = gears.shape.rounded_rect,
+    -- bar_margins         = dpi(1),
+    handle_shape        = gears.shape.circle,
+    -- handle_margins      = dpi(1),
+    -- handle_width        = dpi(10),
+    -- handle_border_width = dpi(1),
+    -- handle_border_color = "#FF0000",
+    -- opacity             = 1,
+    forced_width        = dpi(45),
+    bar_height          = dpi(1),
+    value               = 100,
+    widget              = wibox.widget.slider
+}
+--]]
+-- awful.util.slider_buttons = my_table.join (
+--     awful.button({ }, 4, function()
+--         awful.spawn(string.format("%s -e alsamixer", awful.util.terminal))
+--     end)
+-- )
+
+
+function theme.on_screen_connect(s)
     -- If wallpaper is a function, call it with the screen
     local wallpaper = theme.wallpaper
     if type(wallpaper) == "function" then wallpaper = wallpaper(s) end
@@ -120,29 +156,91 @@ function theme.when_screen_connect(s)
         awful.button({ }, 4, function() awful.layout.inc( 1) end),
         awful.button({ }, 5, function() awful.layout.inc(-1) end)
     ))
+
     -- Create a taglist widget
     s.mytaglist = awful.widget.taglist {
         screen  = s,
         filter  = awful.widget.taglist.filter.all,
-        buttons = awful.util.taglist_buttons
+        -- filter  = awful.widget.taglist.filter.noempty,
+        -- filter  = awful.widget.taglist.filter.selected,
+        buttons = awful.util.taglist_buttons,
+        --[[
+        style = {
+            shape = gears.shape.rounded_rect,
+            shape_border_color = "#333333",
+            shape_border_width = dpi(2)
+        }
+        --]]
     }
 
     -- Create a tasklist widget
     s.mytasklist = awful.widget.tasklist {
         screen  = s,
         filter  = awful.widget.tasklist.filter.currenttags,
-        buttons = awful.util.tasklist_buttons
+        buttons = awful.util.tasklist_buttons,
+        --[[
+        style   = {
+            shape_border_width = dpi(1),
+            shape_border_color = "#d26937",
+            shape = gears.shape.rounded_bar
+        }
+        --]]
     }
+
+    --[[    
+    awful.popup {
+        widget = awful.widget.tasklist {
+            screen = s,
+            filter = awful.widget.tasklist.filter.allscreen,
+            buttons = awful.util.tasklist_buttons,
+            style = {
+                shape = gears.shape.rounded_rect,
+            },
+            layout = {
+                spacing = 5,
+                forced_num_rows = 1,
+                layout = wibox.layout.grid.horizontal
+            },
+            widget_template = {
+                {
+                    {
+                        id = 'clienticon',
+                        widget = awful.widget.clienticon,
+                    },
+                    margins = 4,
+                    border_width = 1,
+                    widget = wibox.container.margin,
+                },
+                id = 'background_role',
+                forced_width = dpi(24),
+                forced_height = dpi(24),
+                widget = wibox.container.background,
+                create_callback = function(self, c, index, objects)
+                    self:get_children_by_id('clienticon')[1].client = c
+                end,
+            },
+        },
+        border_color = '#777777',
+        border_width = dpi(2),
+        ontop = true,
+        placement = awful.placement.centered,
+        shape = gears.shape.rounded_rect
+    }
+    --]]
 
     -- Create the wibox
     s.mywibox = awful.wibar({ position = "top", height = dpi(18), screen = s })
 
     -- Add widgets to the wibox
     s.mywibox:setup {
-        layout = wibox.layout.align.horizontal,
+        -- {
+        --     layout = awful.widget.only_on_screen,
+        --     screen = "primary",
+        --     mytextclock,
+        -- },
         { -- Left widgets
             layout = wibox.layout.fixed.horizontal,
-            mylauncher,
+            -- mylauncher,
             s.mytaglist,
             s.mypromptbox,
         },
@@ -150,10 +248,12 @@ function theme.when_screen_connect(s)
         { -- Right widgets
             layout = wibox.layout.fixed.horizontal,
             -- mykeyboardlayout,
+            -- slider,
             wibox.widget.systray(),
             mytextclock,
             s.mylayoutbox,
         },
+        layout = wibox.layout.align.horizontal,
     }
 end
 

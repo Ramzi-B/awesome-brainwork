@@ -145,7 +145,7 @@ screen.connect_signal("property::geometry", function(s)
 end)
 
 -- Create a wibox for each screen and add it
-awful.screen.connect_for_each_screen(function(s) beautiful.when_screen_connect(s) end)
+awful.screen.connect_for_each_screen(function(s) beautiful.on_screen_connect(s) end)
 
 -- {{{ Mouse bindings
 root.buttons(my_table.join(
@@ -401,6 +401,8 @@ client.connect_signal("request::titlebars", function(c)
             awful.mouse.client.resize(c)
         end)
     )
+
+    -- local tb = { top = "", right = "", left = "",  bottom = "" }
 
     awful.titlebar(c, { size = dpi(18) }) : setup {
         { -- Left
