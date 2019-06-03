@@ -79,22 +79,22 @@ theme.titlebar_maximized_button_focus_inactive      = theme.confdir .. "/titleba
 theme.titlebar_maximized_button_normal_active       = theme.confdir .. "/titlebar/maximized_normal_active.png"
 theme.titlebar_maximized_button_focus_active        = theme.confdir .. "/titlebar/maximized_focus_active.png"
 
-theme.layout_fairh                                  = theme.confdir .. "/layouts/fairhw.png"
-theme.layout_fairv                                  = theme.confdir .. "/layouts/fairvw.png"
-theme.layout_floating                               = theme.confdir .. "/layouts/floatingw.png"
-theme.layout_magnifier                              = theme.confdir .. "/layouts/magnifierw.png"
-theme.layout_max                                    = theme.confdir .. "/layouts/maxw.png"
-theme.layout_fullscreen                             = theme.confdir .. "/layouts/fullscreenw.png"
-theme.layout_tilebottom                             = theme.confdir .. "/layouts/tilebottomw.png"
-theme.layout_tileleft                               = theme.confdir .. "/layouts/tileleftw.png"
-theme.layout_tile                                   = theme.confdir .. "/layouts/tilew.png"
-theme.layout_tiletop                                = theme.confdir .. "/layouts/tiletopw.png"
-theme.layout_spiral                                 = theme.confdir .. "/layouts/spiralw.png"
-theme.layout_dwindle                                = theme.confdir .. "/layouts/dwindlew.png"
-theme.layout_cornernw                               = theme.confdir .. "/layouts/cornernww.png"
-theme.layout_cornerne                               = theme.confdir .. "/layouts/cornernew.png"
-theme.layout_cornersw                               = theme.confdir .. "/layouts/cornersww.png"
-theme.layout_cornerse                               = theme.confdir .. "/layouts/cornersew.png"
+theme.layout_fairh                                  = theme.confdir .. "/layouts/fairh.png"
+theme.layout_fairv                                  = theme.confdir .. "/layouts/fairv.png"
+theme.layout_floating                               = theme.confdir .. "/layouts/floating.png"
+theme.layout_magnifier                              = theme.confdir .. "/layouts/magnifier.png"
+theme.layout_max                                    = theme.confdir .. "/layouts/max.png"
+theme.layout_fullscreen                             = theme.confdir .. "/layouts/fullscreen.png"
+theme.layout_tilebottom                             = theme.confdir .. "/layouts/tilebottom.png"
+theme.layout_tileleft                               = theme.confdir .. "/layouts/tileleft.png"
+theme.layout_tile                                   = theme.confdir .. "/layouts/tile.png"
+theme.layout_tiletop                                = theme.confdir .. "/layouts/tiletop.png"
+theme.layout_spiral                                 = theme.confdir .. "/layouts/spiral.png"
+theme.layout_dwindle                                = theme.confdir .. "/layouts/dwindle.png"
+theme.layout_cornernw                               = theme.confdir .. "/layouts/cornernw.png"
+theme.layout_cornerne                               = theme.confdir .. "/layouts/cornerne.png"
+theme.layout_cornersw                               = theme.confdir .. "/layouts/cornersw.png"
+theme.layout_cornerse                               = theme.confdir .. "/layouts/cornerse.png"
 
 theme.notification_shape                            = shape.infobubble
 theme.notification_margin                           = dpi(20)
@@ -104,6 +104,7 @@ theme.notification_fg                               = "#D26937"
 -- theme.notification_fg                               = "#4C566A"
 
 theme.taglist_squares_sel                           = surface(dpi(5), dpi(5), shape.circle, theme.taglist_fg_focus)
+-- theme.taglist_squares_sel                           = surface(dpi(25), dpi(4), shape.rounded_bar, theme.taglist_fg_focus)
 theme.taglist_squares_unsel                         = surface(dpi(10), dpi(5), shape.rounded_bar, theme.bg_minimize)
 
 -- Widget
@@ -145,13 +146,14 @@ function theme.on_screen_connect(s)
 
     -- Create a promptbox for each screen
     s.mypromptbox = awful.widget.prompt()
+
     -- Create an imagebox widget which will contain an icon indicating which layout we're using.
     -- We need one layoutbox per screen.
     s.mylayoutbox = awful.widget.layoutbox(s)
     s.mylayoutbox:buttons(my_table.join(
-        awful.button({ }, 1, function() awful.layout.inc( 1) end),
+        awful.button({ }, 1, function() awful.layout.inc(1) end),
         awful.button({ }, 3, function() awful.layout.inc(-1) end),
-        awful.button({ }, 4, function() awful.layout.inc( 1) end),
+        awful.button({ }, 4, function() awful.layout.inc(1) end),
         awful.button({ }, 5, function() awful.layout.inc(-1) end)
     ))
 
@@ -176,13 +178,6 @@ function theme.on_screen_connect(s)
         screen  = s,
         filter  = awful.widget.tasklist.filter.currenttags,
         buttons = awful.util.tasklist_buttons,
-        --[[
-        style   = {
-            shape_border_width = dpi(1),
-            shape_border_color = "#d26937",
-            shape = gears.shape.rounded_bar
-        }
-        --]]
     }
 
     --[[
@@ -227,7 +222,7 @@ function theme.on_screen_connect(s)
     --]]
 
     -- Create the wibox
-    s.mywibox = awful.wibar({ position = "top", height = dpi(18), screen = s })
+    s.mywibox = awful.wibar({ screen = s,  position = "top", height = dpi(18) })
 
     -- Add widgets to the wibox
     s.mywibox:setup {
@@ -244,18 +239,7 @@ function theme.on_screen_connect(s)
             -- slider,
             wibox.widget.systray(),
             mytextclock,
-            s.mylayoutbox,
-            --[[
-            { -- just testing !
-                layout = wibox.container.background,
-                bg = "#2E3440",
-                {
-                    layout = wibox.container.margin,
-                    margins = 15,
-                    s.mylayoutbbox,
-                }
-            },
-            --]]
+            s.mylayoutbox
         },
         layout = wibox.layout.align.horizontal,
     }
