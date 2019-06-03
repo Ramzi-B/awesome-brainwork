@@ -12,7 +12,7 @@ local naughty       = require("naughty")
 local menubar       = require("menubar")
 local hotkeys_popup = require("awful.hotkeys_popup")
                       require("awful.hotkeys_popup.keys")
-local dpi           = beautiful.xresources.apply_dpi                      
+local dpi           = beautiful.xresources.apply_dpi
 local my_table      = awful.util.table or gears.table
 local gfs           = gears.filesystem
 -- }}}
@@ -53,7 +53,7 @@ local themes_path = gfs.get_configuration_dir() .. "themes"
 beautiful.init(themes_path .. "/lightcircle/theme.lua")
 
 -- local terminal   = "urxvt -bg black -fg '#1793D1'"
-local terminal   = "termite" -- termite -e vim (to fix don't work)
+local terminal   = "termite"
 local editor     = os.getenv("EDITOR") or "vim"
 local gui_editor = "atom"
 local editor_cmd = terminal .. " -e " .. editor
@@ -71,16 +71,17 @@ awful.util.tagnames = { " Office ", " URxvt ", " Web ", " IDE ", " DEV " }
      awful.layout.suit.tile.top,
      awful.layout.suit.fair,
      awful.layout.suit.fair.horizontal,
-     awful.layout.suit.spiral,
-     awful.layout.suit.spiral.dwindle,
-     awful.layout.suit.max,
-     awful.layout.suit.max.fullscreen,
-     awful.layout.suit.magnifier,
-     awful.layout.suit.corner.nw,
-     awful.layout.suit.corner.ne,
-     awful.layout.suit.corner.sw,
-     awful.layout.suit.corner.se,
+     -- awful.layout.suit.spiral,
+     -- awful.layout.suit.spiral.dwindle,
+     -- awful.layout.suit.max,
+     -- awful.layout.suit.max.fullscreen,
+     -- awful.layout.suit.magnifier,
+     -- awful.layout.suit.corner.nw,
+     -- awful.layout.suit.corner.ne,
+     -- awful.layout.suit.corner.sw,
+     -- awful.layout.suit.corner.se,
 }
+
 --[[
 awful.tag.add("Office", {
     icon = beautiful.awesome_icon,
@@ -133,7 +134,7 @@ menubar.utils.terminal = terminal -- Set the terminal for applications that requ
 mykeyboardlayout = awful.widget.keyboardlayout()
 --]]
 
--- Taglist buttons 
+-- Taglist buttons
 awful.util.taglist_buttons = my_table.join(
     awful.button({ }, 1, function(t) t:view_only() end),
     awful.button({ modkey }, 1, function(t)
@@ -210,7 +211,7 @@ globalkeys = my_table.join(
     awful.key({ modkey,           }, "u", awful.client.urgent.jumpto,
         { description = "jump to urgent client", group = "client" }),
     awful.key({ modkey,           }, "Tab", function() awful.client.focus.history.previous()
-        if client.focus then client.focus:raise() end end, 
+        if client.focus then client.focus:raise() end end,
         { description = "go back", group = "client" }),
 
     -- Standard program
@@ -370,9 +371,9 @@ root.keys(globalkeys)
 -- Rules to apply to new clients (through the "manage" signal).
 awful.rules.rules = {
     -- All clients will match this rule.
-    { 
+    {
         rule = { },
-        properties = { 
+        properties = {
             border_width = beautiful.border_width,
             border_color = beautiful.border_normal,
             focus = awful.client.focus.filter,
@@ -391,8 +392,8 @@ awful.rules.rules = {
     },
 
     -- Set Firefox to always map on the tag named "2" on screen 1.
-    { 
-        rule = { class = "Firefox" },   
+    {
+        rule = { class = "Firefox" },
         properties = { screen = 1, tag = "2" }
     },
 }
@@ -427,7 +428,12 @@ client.connect_signal("request::titlebars", function(c)
         end)
     )
 
-    awful.titlebar(c, { size = dpi(16), position = "top" }) : setup {
+    local titlebar_top = awful.titlebar(c, {
+        size = dpi(16),
+        position = "top"
+    })
+
+    titlebar_top : setup {
         { -- Left
             awful.titlebar.widget.iconwidget(c),
             buttons = buttons,
@@ -450,6 +456,36 @@ client.connect_signal("request::titlebars", function(c)
             layout = wibox.layout.fixed.horizontal()
         },
         layout = wibox.layout.align.horizontal
+    }
+
+    awful.titlebar(c, { size = dpi(6), position = "bottom" }) : setup {
+        nil,
+        { -- Middle
+            buttons = buttons,
+            layout  = wibox.layout.flex.horizontal
+        },
+        nil,
+        layout = wibox.layout.align.horizontal
+    }
+
+    awful.titlebar(c, { size = dpi(6), position = "left" }) : setup {
+        nil,
+        { -- Middle
+            buttons = buttons,
+            layout  = wibox.layout.flex.vertical
+        },
+        nil,
+        layout = wibox.layout.align.vertical
+    }
+
+    awful.titlebar(c, { size = dpi(6), position = "right" }) : setup {
+        nil,
+        { -- Middle
+            buttons = buttons,
+            layout  = wibox.layout.flex.vertical
+        },
+        nil,
+        layout = wibox.layout.align.vertical
     }
 end)
 

@@ -40,11 +40,14 @@ theme.border_normal                                 = "#333333AA"
 theme.border_focus                                  = "#535d6c"
 theme.border_marked                                 = "#91231c"
 
-theme.taglist_bg_focus                              = theme.transparent 
-theme.taglist_fg_focus                              = "#d26937" 
+theme.taglist_bg_focus                              = theme.transparent
+theme.taglist_fg_focus                              = "#d26937"
+
+theme.titlebar_bg                                   = "#2E3440"
+theme.titlebar_bg_focus                             = "#2E3440"
 
 theme.tasklist_disable_icon                         = false
-theme.tasklist_plain_task_name                      = false 
+theme.tasklist_plain_task_name                      = false
 theme.tasklist_disable_task_name                    = true
 
 theme.awesome_icon                                  = theme.confdir .. "/icons/awesome.png"
@@ -94,13 +97,14 @@ theme.layout_cornersw                               = theme.confdir .. "/layouts
 theme.layout_cornerse                               = theme.confdir .. "/layouts/cornersew.png"
 
 theme.notification_shape                            = shape.infobubble
-theme.notification_margin                           = 20
+theme.notification_margin                           = dpi(20)
+theme.notification_padding                          = dpi(5)
 theme.notification_bg                               = "#2E3440"
--- theme.notification_fg                               = "#D26937"
-theme.notification_fg                               = "#4C566A"
+theme.notification_fg                               = "#D26937"
+-- theme.notification_fg                               = "#4C566A"
 
-theme.taglist_squares_sel                           = surface(dpi(5), dpi(5), shape.circle, theme.taglist_fg_focus) 
-theme.taglist_squares_unsel                         = surface(dpi(10), dpi(5), shape.rounded_bar, theme.bg_minimize) 
+theme.taglist_squares_sel                           = surface(dpi(5), dpi(5), shape.circle, theme.taglist_fg_focus)
+theme.taglist_squares_unsel                         = surface(dpi(10), dpi(5), shape.rounded_bar, theme.bg_minimize)
 
 -- Widget
 -- Create a textclock widget
@@ -129,12 +133,6 @@ local slider = wibox.widget {
     widget              = wibox.widget.slider
 }
 --]]
--- awful.util.slider_buttons = my_table.join (
---     awful.button({ }, 4, function()
---         awful.spawn(string.format("%s -e alsamixer", awful.util.terminal))
---     end)
--- )
-
 
 function theme.on_screen_connect(s)
     -- If wallpaper is a function, call it with the screen
@@ -187,7 +185,7 @@ function theme.on_screen_connect(s)
         --]]
     }
 
-    --[[    
+    --[[
     awful.popup {
         widget = awful.widget.tasklist {
             screen = s,
@@ -233,11 +231,6 @@ function theme.on_screen_connect(s)
 
     -- Add widgets to the wibox
     s.mywibox:setup {
-        -- {
-        --     layout = awful.widget.only_on_screen,
-        --     screen = "primary",
-        --     mytextclock,
-        -- },
         { -- Left widgets
             layout = wibox.layout.fixed.horizontal,
             -- mylauncher,
@@ -252,6 +245,17 @@ function theme.on_screen_connect(s)
             wibox.widget.systray(),
             mytextclock,
             s.mylayoutbox,
+            --[[
+            { -- just testing !
+                layout = wibox.container.background,
+                bg = "#2E3440",
+                {
+                    layout = wibox.container.margin,
+                    margins = 15,
+                    s.mylayoutbbox,
+                }
+            },
+            --]]
         },
         layout = wibox.layout.align.horizontal,
     }
