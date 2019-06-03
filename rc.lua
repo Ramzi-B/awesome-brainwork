@@ -428,12 +428,14 @@ client.connect_signal("request::titlebars", function(c)
         end)
     )
 
-    local titlebar_top = awful.titlebar(c, {
-        size = dpi(16),
-        position = "top"
-    })
+    local titlebars = {
+        _top    = awful.titlebar(c, { size = dpi(16), position = "top" }),
+        _right  = awful.titlebar(c, { size = dpi(6), position = "right" }),
+        _bottom = awful.titlebar(c, { size = dpi(6), position = "bottom" }),
+        _left   = awful.titlebar(c, { size = dpi(6), position = "left" })
+    }
 
-    titlebar_top : setup {
+    titlebars._top : setup {
         { -- Left
             awful.titlebar.widget.iconwidget(c),
             buttons = buttons,
@@ -453,12 +455,12 @@ client.connect_signal("request::titlebars", function(c)
             awful.titlebar.widget.stickybutton   (c),
             awful.titlebar.widget.ontopbutton    (c),
             awful.titlebar.widget.closebutton    (c),
-            layout = wibox.layout.fixed.horizontal()
+            layout = wibox.layout.fixed.horizontal
         },
         layout = wibox.layout.align.horizontal
     }
 
-    awful.titlebar(c, { size = dpi(6), position = "bottom" }) : setup {
+    titlebars._bottom : setup {
         nil,
         { -- Middle
             buttons = buttons,
@@ -468,7 +470,7 @@ client.connect_signal("request::titlebars", function(c)
         layout = wibox.layout.align.horizontal
     }
 
-    awful.titlebar(c, { size = dpi(6), position = "left" }) : setup {
+    titlebars._left : setup {
         nil,
         { -- Middle
             buttons = buttons,
@@ -478,7 +480,7 @@ client.connect_signal("request::titlebars", function(c)
         layout = wibox.layout.align.vertical
     }
 
-    awful.titlebar(c, { size = dpi(6), position = "right" }) : setup {
+    titlebars._right : setup {
         nil,
         { -- Middle
             buttons = buttons,
