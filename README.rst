@@ -1,2 +1,2 @@
-awesome-brainwork
-=================
+Awesome WM Brainwork
+====================
