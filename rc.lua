@@ -10,7 +10,7 @@ local wibox         = require("wibox")
 local beautiful     = require("beautiful")
 local naughty       = require("naughty")
 local menubar       = require("menubar")
-local hotkeys_popup = require("awful.hotkeys_popup")
+local hotkeys_popup = require("awful.hotkeys_popup").widget
                       require("awful.hotkeys_popup.keys")
 local dpi           = beautiful.xresources.apply_dpi
 local my_table      = awful.util.table or gears.table
@@ -381,20 +381,40 @@ awful.rules.rules = {
             keys = clientkeys,
             buttons = clientbuttons,
             screen = awful.screen.preferred,
-            placement = awful.placement.no_overlap+awful.placement.no_offscreen
+            placement = awful.placement.no_overlap+awful.placement.no_offscreen,
+            -- maximized_vertical = false,
+            -- maximized_horizontal = false
         }
     },
-
     -- Add titlebars to normal clients and dialogs
     {
         rule_any = { type = { "normal", "dialog" } },
         properties = { titlebars_enabled = true }
     },
-
-    -- Set Firefox to always map on the tag named "2" on screen 1.
+    -- Gimp
+    {
+        rule = { class = "Gimp", role = "gimp-image-window" },
+        properties = { floating = true }
+    },
+    -- Set Pcmanfm to always map on the tag named "1" on screen 1.
+    {
+        rule = { class = "Pcmanfm" },
+        properties = { screen = 1, tag = awful.util.tagnames[1] }
+    },
+    -- Set Atom to always map on the tag named "4" on screen 1.
+    {
+        rule = { class = "Atom" },
+        properties = { screen = 1, tag = awful.util.tagnames[4] }
+    },
+    -- Set Firefox to always map on the tag named "3" on screen 3.
     {
         rule = { class = "Firefox" },
-        properties = { screen = 1, tag = "2" }
+        properties = { screen = 3, tag = awful.util.tagnames[3] }
+    },
+    -- Set Chromium to always map on the tag named "3" on screen 2.
+    {
+        rule = { class = "Chromium" },
+        properties = { screen = 2, tag = awful.util.tagnames[3] }
     },
 }
 -- }}}
@@ -410,7 +430,8 @@ client.connect_signal("manage", function(c)
       and not c.size_hints.user_position
       and not c.size_hints.program_position then
         -- Prevent clients from being unreachable after screen count changes.
-        awful.placement.no_offscreen(c)
+        -- awful.placement.no_offscreen(c)
+        awful.placement.no_offscreen(c, { honor_workarea = true, margins = dpi(40) })
     end
 end)
 
@@ -504,6 +525,13 @@ client.connect_signal("focus", function(c)
         c.border_color = beautiful.border_focus
     end
 end)
+
+-- client.connect_signal("focus", function(c)
+--     if c.maximized then
+--         c.border_width = dpi(0)
+--     end
+--     -- c.border_color = beautiful.border_focus
+-- end)
 
 client.connect_signal("unfocus", function(c) c.border_color = beautiful.border_normal end)
 -- }}}

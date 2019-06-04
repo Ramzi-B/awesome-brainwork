@@ -21,11 +21,30 @@ theme.font                                          = "TerminessTTFNerdFontMono 
 theme.icon_theme                                    = "Papirus-Dark"
 theme.useless_gap                                   = dpi(4)
 
-theme.transparent                                   = "#00000000"
+theme.colors                                        = {
+    transparent  = "#00000000",
+    red          = "#FF0000",
+    orange       = "#FFA500",
+    orangedark   = "#FF8C00",
+    orangedarken = "#EF6C00",
+    orangedeep   = "#FF3D00",
+    silver       = "#C0C0C0",
+    darkgray     = "#A9A9A9",
+    bluegray     = "#263238",
+    tealdarken   = "#004D40"
+}
+
+theme.hotkeys_font                                  = "TerminessTTFNerdFontMono 12"
+theme.hotkeys_description_font                      = "TerminessTTFNerdFontMono 10"
+theme.hotkeys_shape                                 = shape.rounded_rect
+theme.hotkeys_border_width                          = dpi(2)
+theme.hotkeys_border_color                          = theme.border_focus
+theme.hotkeys_group_margin                          = dpi(40)
 
 theme.bg_normal                                     = "#222222AA"
+-- theme.bg_normal                                     = theme.colors.bluegray
 theme.bg_focus                                      = "#333333"
-theme.bg_urgent                                     = "#ff0000"
+theme.bg_urgent                                     = theme.colors.red
 theme.bg_minimize                                   = "#444444"
 theme.bg_systray                                    = theme.bg_normal
 theme.systray_icon_spacing                          = dpi(3)
@@ -39,9 +58,10 @@ theme.border_width                                  = dpi(1)
 theme.border_normal                                 = "#333333AA"
 theme.border_focus                                  = "#535d6c"
 theme.border_marked                                 = "#91231c"
+theme.maximized_hide_border                         = true
 
-theme.taglist_bg_focus                              = theme.transparent
-theme.taglist_fg_focus                              = "#d26937"
+theme.taglist_bg_focus                              = theme.colors.transparent
+theme.taglist_fg_focus                              = theme.colors.orangedeep
 
 theme.titlebar_bg                                   = "#2E3440"
 theme.titlebar_bg_focus                             = "#2E3440"
@@ -79,27 +99,27 @@ theme.titlebar_maximized_button_focus_inactive      = theme.confdir .. "/titleba
 theme.titlebar_maximized_button_normal_active       = theme.confdir .. "/titlebar/maximized_normal_active.png"
 theme.titlebar_maximized_button_focus_active        = theme.confdir .. "/titlebar/maximized_focus_active.png"
 
-theme.layout_fairh                                  = theme.confdir .. "/layouts/fairh.png"
-theme.layout_fairv                                  = theme.confdir .. "/layouts/fairv.png"
-theme.layout_floating                               = theme.confdir .. "/layouts/floating.png"
-theme.layout_magnifier                              = theme.confdir .. "/layouts/magnifier.png"
-theme.layout_max                                    = theme.confdir .. "/layouts/max.png"
-theme.layout_fullscreen                             = theme.confdir .. "/layouts/fullscreen.png"
-theme.layout_tilebottom                             = theme.confdir .. "/layouts/tilebottom.png"
-theme.layout_tileleft                               = theme.confdir .. "/layouts/tileleft.png"
-theme.layout_tile                                   = theme.confdir .. "/layouts/tile.png"
-theme.layout_tiletop                                = theme.confdir .. "/layouts/tiletop.png"
-theme.layout_spiral                                 = theme.confdir .. "/layouts/spiral.png"
-theme.layout_dwindle                                = theme.confdir .. "/layouts/dwindle.png"
-theme.layout_cornernw                               = theme.confdir .. "/layouts/cornernw.png"
-theme.layout_cornerne                               = theme.confdir .. "/layouts/cornerne.png"
-theme.layout_cornersw                               = theme.confdir .. "/layouts/cornersw.png"
-theme.layout_cornerse                               = theme.confdir .. "/layouts/cornerse.png"
+theme.layout_fairh                                  = theme.confdir .. "/layouts/fairh.svg"
+theme.layout_fairv                                  = theme.confdir .. "/layouts/fairv.svg"
+theme.layout_floating                               = theme.confdir .. "/layouts/floating.svg"
+theme.layout_magnifier                              = theme.confdir .. "/layouts/magnifier.svg"
+theme.layout_max                                    = theme.confdir .. "/layouts/max.svg"
+theme.layout_fullscreen                             = theme.confdir .. "/layouts/fullscreen.svg"
+theme.layout_tilebottom                             = theme.confdir .. "/layouts/tilebottom.svg"
+theme.layout_tileleft                               = theme.confdir .. "/layouts/tileleft.svg"
+theme.layout_tile                                   = theme.confdir .. "/layouts/tile.svg"
+theme.layout_tiletop                                = theme.confdir .. "/layouts/tiletop.svg"
+theme.layout_spiral                                 = theme.confdir .. "/layouts/spiral.svg"
+theme.layout_dwindle                                = theme.confdir .. "/layouts/dwindle.svg"
+theme.layout_cornernw                               = theme.confdir .. "/layouts/cornernw.svg"
+theme.layout_cornerne                               = theme.confdir .. "/layouts/cornerne.svg"
+theme.layout_cornersw                               = theme.confdir .. "/layouts/cornersw.svg"
+theme.layout_cornerse                               = theme.confdir .. "/layouts/cornerse.svg"
 
 theme.notification_shape                            = shape.infobubble
 theme.notification_margin                           = dpi(20)
 theme.notification_padding                          = dpi(5)
-theme.notification_bg                               = "#2E3440"
+theme.notification_bg                               = theme.colors.bluegray
 theme.notification_fg                               = "#D26937"
 -- theme.notification_fg                               = "#4C566A"
 
