@@ -20,6 +20,27 @@ theme.wallpaper                                     = theme.confdir .. "/wallpap
 theme.font                                          = "TerminessTTFNerdFontMono 10"
 theme.icon_theme                                    = "Papirus-Dark"
 theme.useless_gap                                   = dpi(4)
+-- theme.gap_single_client                             = false
+
+theme.colors                                        = {
+    transparent  = "#00000000",
+    red          = "#FF0000",
+    orange       = "#FFA500",
+    orangedark   = "#FF8C00",
+    orangedarken = "#EF6C00",
+    orangedeep   = "#FF3D00",
+    silver       = "#C0C0C0",
+    darkgray     = "#A9A9A9",
+    bluegray     = "#263238",
+    tealdarken   = "#004D40"
+}
+
+theme.hotkeys_font                                  = "TerminessTTFNerdFontMono 12"
+theme.hotkeys_description_font                      = "TerminessTTFNerdFontMono 10"
+theme.hotkeys_shape                                 = shape.rounded_rect
+theme.hotkeys_border_width                          = dpi(2)
+theme.hotkeys_border_color                          = theme.border_focus
+theme.hotkeys_group_margin                          = dpi(40)
 
 theme.colors                                        = {
     transparent  = "#00000000",

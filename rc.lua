@@ -15,8 +15,11 @@ local hotkeys_popup = require("awful.hotkeys_popup").widget
 local dpi           = beautiful.xresources.apply_dpi
 local my_table      = awful.util.table or gears.table
 local gfs           = gears.filesystem
+-- local lain          = require("lain")
+-- local test          = require("test")
 -- }}}
 -- local test          = require("test")
+
 
 -- {{{ Error handling
 -- Check if awesome encountered an error during startup and fell back to
@@ -48,6 +51,10 @@ do
 end
 -- }}}
 
+naughty.config.defaults.screen    = 3
+naughty.config.defaults.margin    = dpi(20)
+naughty.config.defaults.icon_size = dpi(36)
+
 -- {{{ Variable definitions
 local themes_path = gfs.get_configuration_dir() .. "themes"
 beautiful.init(themes_path .. "/lightcircle/theme.lua")
@@ -58,6 +65,7 @@ local editor     = os.getenv("EDITOR") or "vim"
 local gui_editor = "atom"
 local editor_cmd = terminal .. " -e " .. editor
 local modkey     = "Mod4"
+local altkey     = "Mod1"
 
 -- awful.util.tagnames = { " 1 " , " 2 ", " 3 ", " 4 ", " 5 " }
 awful.util.tagnames = { " Office ", " URxvt ", " Web ", " IDE ", " DEV " }
@@ -298,17 +306,29 @@ clientkeys = my_table.join(
         c.maximized = not c.maximized
         c:raise()
     end,
-    { description = "(un)maximize", group = "client" }),
+        { description = "(un)maximize", group = "client" }),
     awful.key({ modkey, "Control" }, "m", function(c)
         c.maximized_vertical = not c.maximized_vertical
         c:raise()
     end,
-    { description = "(un)maximize vertically", group = "client" }),
+        { description = "(un)maximize vertically", group = "client" }),
     awful.key({ modkey, "Shift"   }, "m", function(c)
         c.maximized_horizontal = not c.maximized_horizontal
         c:raise()
     end,
-    { description = "(un)maximize horizontally", group = "client" })
+        { description = "(un)maximize horizontally", group = "client" }),
+    awful.key({ altkey }, "Next", function(c) c:relative_move(20, 20, -40, -40) end,
+        { description = "decrease client size", group = "client" }),
+    awful.key({ altkey }, "Prior", function(c) c:relative_move(-20, -20, 40, 40) end,
+        { description = "increase client size", group = "client" }),
+    awful.key({ altkey }, "Down", function(c) c:relative_move(0, 20, 0, 0) end,
+        { description = "move client down", group = "client" }),
+    awful.key({ altkey }, "Up", function(c) c:relative_move(0, -20, 0, 0) end,
+        { description = "move client up", group = "client" }),
+    awful.key({ altkey }, "Left", function(c) c:relative_move(-20, 0, 0, 0) end,
+        { description = "move client left", group = "client" }),
+    awful.key({ altkey }, "Right", function(c) c:relative_move( 20, 0, 0, 0) end,
+        { description = "move client right", group = "client" })
 )
 
 -- Bind all key numbers to tags.
@@ -525,13 +545,6 @@ client.connect_signal("focus", function(c)
         c.border_color = beautiful.border_focus
     end
 end)
-
--- client.connect_signal("focus", function(c)
---     if c.maximized then
---         c.border_width = dpi(0)
---     end
---     -- c.border_color = beautiful.border_focus
--- end)
 
 client.connect_signal("unfocus", function(c) c.border_color = beautiful.border_normal end)
 -- }}}
