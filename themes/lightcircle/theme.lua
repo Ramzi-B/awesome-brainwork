@@ -181,8 +181,8 @@ function theme.on_screen_connect(s)
     -- Create a taglist widget
     s.mytaglist = awful.widget.taglist {
         screen  = s,
-        filter  = awful.widget.taglist.filter.all,
-        -- filter  = awful.widget.taglist.filter.noempty,
+        -- filter  = awful.widget.taglist.filter.all,
+        filter  = awful.widget.taglist.filter.noempty,
         -- filter  = awful.widget.taglist.filter.selected,
         buttons = awful.util.taglist_buttons,
         --[[
