@@ -18,7 +18,6 @@ local gfs           = gears.filesystem
 -- local lain          = require("lain")
 -- local test          = require("test")
 -- }}}
--- local test          = require("test")
 
 
 -- {{{ Error handling
