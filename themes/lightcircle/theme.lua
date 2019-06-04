@@ -20,7 +20,7 @@ theme.wallpaper                                     = theme.confdir .. "/wallpap
 theme.font                                          = "TerminessTTFNerdFontMono 10"
 theme.icon_theme                                    = "Papirus-Dark"
 theme.useless_gap                                   = dpi(4)
-theme.gap_single_client                             = true 
+-- theme.gap_single_client                             = false
 
 theme.colors                                        = {
     transparent  = "#00000000",
@@ -78,9 +78,6 @@ theme.menu_submenu_icon                             = theme.confdir .. "/icons/s
 theme.menu_height                                   = dpi(16)
 theme.menu_width                                    = dpi(120)
 theme.menu_border_width                             = dpi(0)
-
-theme.taglist_squares_sel                           = gears.surface.load_from_shape(dpi(10), dpi(2), gears.shape.rectangle, theme.fg_focus) 
-theme.taglist_squares_unsel                         = gears.surface.load_from_shape(dpi(10), dpi(2), gears.shape.rectangle, theme.bg_minimize) 
 
 theme.titlebar_close_button_normal                  = theme.confdir .. "/titlebar/close_normal.png"
 theme.titlebar_close_button_focus                   = theme.confdir .. "/titlebar/close_focus.png"
