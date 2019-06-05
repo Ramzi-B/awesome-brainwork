@@ -16,7 +16,6 @@ local dpi           = beautiful.xresources.apply_dpi
 local my_table      = awful.util.table or gears.table
 local gfs           = gears.filesystem
 -- local lain          = require("lain")
--- local test          = require("test")
 -- }}}
 
 -- {{{ Error handling
@@ -278,10 +277,7 @@ globalkeys = my_table.join(
 )
 
 clientkeys = my_table.join(
-    awful.key({ modkey,           }, "f", function(c)
-        c.fullscreen = not c.fullscreen
-        c:raise()
-    end,
+    awful.key({ modkey,           }, "f", function(c) c.fullscreen = not c.fullscreen; c:raise() end,
         { description = "toggle fullscreen", group = "client" }),
     awful.key({ modkey, "Shift"   }, "c", function(c) c:kill() end,
         { description = "close", group = "client" }),
@@ -293,26 +289,15 @@ clientkeys = my_table.join(
         { description = "move to screen", group = "client" }),
     awful.key({ modkey,           }, "t", function(c) c.ontop = not c.ontop end,
         { description = "toggle keep on top", group = "client" }),
-    awful.key({ modkey,           }, "n", function(c)
-        -- The client currently has the input focus, so it cannot be
-        -- minimized, since minimized clients can't have the focus.
-        c.minimized = true
-    end,
+    -- The client currently has the input focus, so it cannot be
+    -- minimized, since minimized clients can't have the focus.
+    awful.key({ modkey,           }, "n", function(c) c.minimized = true end,
         { description = "minimize", group = "client" }),
-    awful.key({ modkey,           }, "m", function(c)
-        c.maximized = not c.maximized
-        c:raise()
-    end,
+    awful.key({ modkey,           }, "m", function(c) c.maximized = not c.maximized; c:raise() end,
         { description = "(un)maximize", group = "client" }),
-    awful.key({ modkey, "Control" }, "m", function(c)
-        c.maximized_vertical = not c.maximized_vertical
-        c:raise()
-    end,
+    awful.key({ modkey, "Control" }, "m", function(c) c.maximized_vertical = not c.maximized_vertical; c:raise() end,
         { description = "(un)maximize vertically", group = "client" }),
-    awful.key({ modkey, "Shift"   }, "m", function(c)
-        c.maximized_horizontal = not c.maximized_horizontal
-        c:raise()
-    end,
+    awful.key({ modkey, "Shift"   }, "m", function(c) c.maximized_horizontal = not c.maximized_horizontal; c:raise() end,
         { description = "(un)maximize horizontally", group = "client" }),
 
     -- Move and resize floaters
@@ -327,7 +312,19 @@ clientkeys = my_table.join(
     awful.key({ altkey }, "Left", function(c) c:relative_move(-20, 0, 0, 0) end,
         { description = "move client left", group = "client" }),
     awful.key({ altkey }, "Right", function(c) c:relative_move( 20, 0, 0, 0) end,
-        { description = "move client right", group = "client" })
+        { description = "move client right", group = "client" }),
+
+    -- Client menu as app switcher
+    awful.key({ altkey }, "Escape", function ()
+        -- If you want to always position the menu on the same place set coordinates
+        awful.menu.menu_keys.down = { "Down", "Alt_L" }
+        awful.menu.clients({ theme = { width = 350 }}, { keygrabber = true, coords = { x = 325, y = 330} })
+    end,
+        { description = "client menu application switcher", group = "launcher"}),
+
+    -- Toggle titlebar
+    awful.key({ modkey, "Shift" }, "t", awful.titlebar.toggle,
+        { description = "toggle titlebar", group = "client" })
 )
 
 -- Bind all key numbers to tags.
@@ -400,7 +397,7 @@ awful.rules.rules = {
             keys = clientkeys,
             buttons = clientbuttons,
             screen = awful.screen.preferred,
-            placement = awful.placement.no_overlap+awful.placement.no_offscreen,
+            placement = awful.placement.no_overlap + awful.placement.no_offscreen,
             -- maximized_vertical = false,
             -- maximized_horizontal = false
         }
