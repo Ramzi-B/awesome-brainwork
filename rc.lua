@@ -19,7 +19,6 @@ local gfs           = gears.filesystem
 -- local test          = require("test")
 -- }}}
 
-
 -- {{{ Error handling
 -- Check if awesome encountered an error during startup and fell back to
 -- another config (This code will only ever execute for the fallback config)
@@ -58,11 +57,11 @@ naughty.config.defaults.icon_size = dpi(36)
 local themes_path = gfs.get_configuration_dir() .. "themes"
 beautiful.init(themes_path .. "/lightcircle/theme.lua")
 
--- local terminal   = "urxvt -bg black -fg '#1793D1'"
+local terminal1   = "urxvt -bg black -fg '#1793D1'"
 local terminal   = "termite"
 local editor     = os.getenv("EDITOR") or "vim"
 local gui_editor = "atom"
-local editor_cmd = terminal .. " -e " .. editor
+local editor_cmd = terminal1 .. " -e " .. editor
 local modkey     = "Mod4"
 local altkey     = "Mod1"
 
@@ -237,11 +236,11 @@ globalkeys = my_table.join(
         { description = "increase the number of master clients", group = "layout" }),
     awful.key({ modkey, "Shift"   }, "l",     function() awful.tag.incnmaster(-1, nil, true) end,
         { description = "decrease the number of master clients", group = "layout" }),
-    awful.key({ modkey, "Control" }, "h",     function() awful.tag.incncol( 1, nil, true) end,
+    awful.key({ modkey, "Control" }, "h",     function() awful.tag.incncol(1, nil, true) end,
         { description = "increase the number of columns", group = "layout" }),
     awful.key({ modkey, "Control" }, "l",     function() awful.tag.incncol(-1, nil, true) end,
         { description = "decrease the number of columns", group = "layout" }),
-    awful.key({ modkey,           }, "space", function() awful.layout.inc( 1) end,
+    awful.key({ modkey,           }, "space", function() awful.layout.inc(1) end,
         { description = "select next", group = "layout" }),
     awful.key({ modkey, "Shift"   }, "space", function() awful.layout.inc(-1) end,
         { description = "select previous", group = "layout" }),
@@ -252,6 +251,12 @@ globalkeys = my_table.join(
         if c then c:emit_signal("request::activate", "key.unminimize", { raise = true }) end
     end,
         { description = "restore minimized", group = "client" }),
+
+    -- Toggle wibox visibility
+    awful.key({ modkey }, "b", function()
+        mouse.screen.mywibox.visible = not mouse.screen.mywibox.visible
+    end,
+        { description = "toggle wibox", group = "awesome" }),
 
     -- Prompt
     awful.key({ modkey }, "r", function() awful.screen.focused().mypromptbox:run() end,
@@ -278,22 +283,15 @@ clientkeys = my_table.join(
         c:raise()
     end,
         { description = "toggle fullscreen", group = "client" }),
-    awful.key({ modkey, "Shift"   }, "c", function(c) c:kill()
-    end,
+    awful.key({ modkey, "Shift"   }, "c", function(c) c:kill() end,
         { description = "close", group = "client" }),
     awful.key({ modkey, "Control" }, "space",  awful.client.floating.toggle,
         { description = "toggle floating", group = "client" }),
-    awful.key({ modkey, "Control" }, "Return", function(c)
-        c:swap(awful.client.getmaster())
-    end,
+    awful.key({ modkey, "Control" }, "Return", function(c) c:swap(awful.client.getmaster()) end,
         { description = "move to master", group = "client" }),
-    awful.key({ modkey,           }, "o", function(c)
-        c:move_to_screen()
-    end,
+    awful.key({ modkey,           }, "o", function(c) c:move_to_screen() end,
         { description = "move to screen", group = "client" }),
-    awful.key({ modkey,           }, "t", function(c)
-        c.ontop = not c.ontop
-    end,
+    awful.key({ modkey,           }, "t", function(c) c.ontop = not c.ontop end,
         { description = "toggle keep on top", group = "client" }),
     awful.key({ modkey,           }, "n", function(c)
         -- The client currently has the input focus, so it cannot be
@@ -316,6 +314,8 @@ clientkeys = my_table.join(
         c:raise()
     end,
         { description = "(un)maximize horizontally", group = "client" }),
+
+    -- Move and resize floaters
     awful.key({ altkey }, "Next", function(c) c:relative_move(20, 20, -40, -40) end,
         { description = "decrease client size", group = "client" }),
     awful.key({ altkey }, "Prior", function(c) c:relative_move(-20, -20, 40, 40) end,

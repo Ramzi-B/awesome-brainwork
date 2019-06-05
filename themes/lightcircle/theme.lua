@@ -11,7 +11,6 @@ local my_table                                      = awful.util.table or gears.
 local surface                                       = gears.surface.load_from_shape
 local shape                                         = gears.shape
 
-
 local theme                                         = {}
 -- theme.confdir                                    = gfs.get_xdg_config_home() .. "awesome/themes/lightcircle"
 theme.confdir                                       = gfs.get_configuration_dir() .. "themes/lightcircle"
@@ -136,7 +135,6 @@ mytextclock.font = "TerminessTTFNerdFontMono bold 10.5"
 -- Launcher
 local mylauncher = awful.widget.button({ image = theme.arch_icon })
 mylauncher:connect_signal("button::press", function() awful.util.mymainmenu:toggle() end)
-
 
 --[[
 -- Slider
