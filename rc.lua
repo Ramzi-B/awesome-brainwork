@@ -48,9 +48,11 @@ do
 end
 -- }}}
 
-naughty.config.defaults.screen    = 3
-naughty.config.defaults.margin    = dpi(20)
+-- Naughty defaults
+-- naughty.config.defaults.screen    = 3
+naughty.config.defaults.margin    = dpi(15)
 naughty.config.defaults.icon_size = dpi(36)
+-- naughty.config.defaults.position  = "top_middle"
 
 -- {{{ Variable definitions
 local themes_path = gfs.get_configuration_dir() .. "themes"
@@ -162,7 +164,7 @@ awful.util.tasklist_buttons = my_table.join(
             c:emit_signal("request::activate", "tasklist", { raise = true })
         end
     end),
-    awful.button({ }, 3, function() awful.menu.client_list({ theme = { width = 350 } }) end),
+    awful.button({ }, 3, function() awful.menu.client_list({ theme = { width = dpi(350) } }) end),
     awful.button({ }, 4, function() awful.client.focus.byidx(1) end),
     awful.button({ }, 5, function() awful.client.focus.byidx(-1) end))
 
@@ -251,12 +253,6 @@ globalkeys = my_table.join(
     end,
         { description = "restore minimized", group = "client" }),
 
-    -- Toggle wibox visibility
-    awful.key({ modkey }, "b", function()
-        mouse.screen.mywibox.visible = not mouse.screen.mywibox.visible
-    end,
-        { description = "toggle wibox", group = "awesome" }),
-
     -- Prompt
     awful.key({ modkey }, "r", function() awful.screen.focused().mypromptbox:run() end,
         { description = "run prompt", group = "launcher" }),
@@ -273,7 +269,21 @@ globalkeys = my_table.join(
 
     -- Menubar
     awful.key({ modkey }, "p", function() menubar.show() end,
-        { description = "show the menubar", group = "launcher" })
+        { description = "show the menubar", group = "launcher" }),
+
+    -- Toggle wibox visibility
+    awful.key({ modkey }, "b", function()
+        mouse.screen.mywibox.visible = not mouse.screen.mywibox.visible
+    end,
+        { description = "toggle wibox", group = "awesome" }),
+
+    -- Client menu as app switcher
+    awful.key({ altkey }, "Escape", function ()
+        -- If you want to always position the menu on the same place set coordinates
+        awful.menu.menu_keys.down = { "Down", "Alt_L" }
+        awful.menu.clients({ theme = { width = dpi(350) }}, { keygrabber = true, coords = { x = 525, y = 330} })
+    end,
+        { description = "client menu application switcher", group = "launcher"})
 )
 
 clientkeys = my_table.join(
@@ -313,14 +323,6 @@ clientkeys = my_table.join(
         { description = "move client left", group = "client" }),
     awful.key({ altkey }, "Right", function(c) c:relative_move( 20, 0, 0, 0) end,
         { description = "move client right", group = "client" }),
-
-    -- Client menu as app switcher
-    awful.key({ altkey }, "Escape", function ()
-        -- If you want to always position the menu on the same place set coordinates
-        awful.menu.menu_keys.down = { "Down", "Alt_L" }
-        awful.menu.clients({ theme = { width = 350 }}, { keygrabber = true, coords = { x = 325, y = 330} })
-    end,
-        { description = "client menu application switcher", group = "launcher"}),
 
     -- Toggle titlebar
     awful.key({ modkey, "Shift" }, "t", awful.titlebar.toggle,
