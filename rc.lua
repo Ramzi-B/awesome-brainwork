@@ -16,9 +16,7 @@ local dpi           = beautiful.xresources.apply_dpi
 local my_table      = awful.util.table or gears.table
 local gfs           = gears.filesystem
 -- local lain          = require("lain")
--- local test          = require("test")
 -- }}}
-
 
 -- {{{ Error handling
 -- Check if awesome encountered an error during startup and fell back to
@@ -50,19 +48,21 @@ do
 end
 -- }}}
 
-naughty.config.defaults.screen    = 3
-naughty.config.defaults.margin    = dpi(20)
+-- Naughty defaults
+-- naughty.config.defaults.screen    = 3
+naughty.config.defaults.margin    = dpi(15)
 naughty.config.defaults.icon_size = dpi(36)
+-- naughty.config.defaults.position  = "top_middle"
 
 -- {{{ Variable definitions
 local themes_path = gfs.get_configuration_dir() .. "themes"
 beautiful.init(themes_path .. "/lightcircle/theme.lua")
 
--- local terminal   = "urxvt -bg black -fg '#1793D1'"
+local terminal1   = "urxvt -bg black -fg '#1793D1'"
 local terminal   = "termite"
 local editor     = os.getenv("EDITOR") or "vim"
 local gui_editor = "atom"
-local editor_cmd = terminal .. " -e " .. editor
+local editor_cmd = terminal1 .. " -e " .. editor
 local modkey     = "Mod4"
 local altkey     = "Mod1"
 
@@ -164,7 +164,7 @@ awful.util.tasklist_buttons = my_table.join(
             c:emit_signal("request::activate", "tasklist", { raise = true })
         end
     end),
-    awful.button({ }, 3, function() awful.menu.client_list({ theme = { width = 350 } }) end),
+    awful.button({ }, 3, function() awful.menu.client_list({ theme = { width = dpi(350) } }) end),
     awful.button({ }, 4, function() awful.client.focus.byidx(1) end),
     awful.button({ }, 5, function() awful.client.focus.byidx(-1) end))
 
@@ -237,11 +237,11 @@ globalkeys = my_table.join(
         { description = "increase the number of master clients", group = "layout" }),
     awful.key({ modkey, "Shift"   }, "l",     function() awful.tag.incnmaster(-1, nil, true) end,
         { description = "decrease the number of master clients", group = "layout" }),
-    awful.key({ modkey, "Control" }, "h",     function() awful.tag.incncol( 1, nil, true) end,
+    awful.key({ modkey, "Control" }, "h",     function() awful.tag.incncol(1, nil, true) end,
         { description = "increase the number of columns", group = "layout" }),
     awful.key({ modkey, "Control" }, "l",     function() awful.tag.incncol(-1, nil, true) end,
         { description = "decrease the number of columns", group = "layout" }),
-    awful.key({ modkey,           }, "space", function() awful.layout.inc( 1) end,
+    awful.key({ modkey,           }, "space", function() awful.layout.inc(1) end,
         { description = "select next", group = "layout" }),
     awful.key({ modkey, "Shift"   }, "space", function() awful.layout.inc(-1) end,
         { description = "select previous", group = "layout" }),
@@ -269,53 +269,48 @@ globalkeys = my_table.join(
 
     -- Menubar
     awful.key({ modkey }, "p", function() menubar.show() end,
-        { description = "show the menubar", group = "launcher" })
+        { description = "show the menubar", group = "launcher" }),
+
+    -- Toggle wibox visibility
+    awful.key({ modkey }, "b", function()
+        mouse.screen.mywibox.visible = not mouse.screen.mywibox.visible
+    end,
+        { description = "toggle wibox", group = "awesome" }),
+
+    -- Client menu as app switcher
+    awful.key({ altkey }, "Escape", function ()
+        -- If you want to always position the menu on the same place set coordinates
+        awful.menu.menu_keys.down = { "Down", "Alt_L" }
+        awful.menu.clients({ theme = { width = dpi(350) }}, { keygrabber = true, coords = { x = 525, y = 330} })
+    end,
+        { description = "client menu application switcher", group = "launcher"})
 )
 
 clientkeys = my_table.join(
-    awful.key({ modkey,           }, "f", function(c)
-        c.fullscreen = not c.fullscreen
-        c:raise()
-    end,
+    awful.key({ modkey,           }, "f", function(c) c.fullscreen = not c.fullscreen; c:raise() end,
         { description = "toggle fullscreen", group = "client" }),
-    awful.key({ modkey, "Shift"   }, "c", function(c) c:kill()
-    end,
+    awful.key({ modkey, "Shift"   }, "c", function(c) c:kill() end,
         { description = "close", group = "client" }),
     awful.key({ modkey, "Control" }, "space",  awful.client.floating.toggle,
         { description = "toggle floating", group = "client" }),
-    awful.key({ modkey, "Control" }, "Return", function(c)
-        c:swap(awful.client.getmaster())
-    end,
+    awful.key({ modkey, "Control" }, "Return", function(c) c:swap(awful.client.getmaster()) end,
         { description = "move to master", group = "client" }),
-    awful.key({ modkey,           }, "o", function(c)
-        c:move_to_screen()
-    end,
+    awful.key({ modkey,           }, "o", function(c) c:move_to_screen() end,
         { description = "move to screen", group = "client" }),
-    awful.key({ modkey,           }, "t", function(c)
-        c.ontop = not c.ontop
-    end,
+    awful.key({ modkey,           }, "t", function(c) c.ontop = not c.ontop end,
         { description = "toggle keep on top", group = "client" }),
-    awful.key({ modkey,           }, "n", function(c)
-        -- The client currently has the input focus, so it cannot be
-        -- minimized, since minimized clients can't have the focus.
-        c.minimized = true
-    end,
+    -- The client currently has the input focus, so it cannot be
+    -- minimized, since minimized clients can't have the focus.
+    awful.key({ modkey,           }, "n", function(c) c.minimized = true end,
         { description = "minimize", group = "client" }),
-    awful.key({ modkey,           }, "m", function(c)
-        c.maximized = not c.maximized
-        c:raise()
-    end,
+    awful.key({ modkey,           }, "m", function(c) c.maximized = not c.maximized; c:raise() end,
         { description = "(un)maximize", group = "client" }),
-    awful.key({ modkey, "Control" }, "m", function(c)
-        c.maximized_vertical = not c.maximized_vertical
-        c:raise()
-    end,
+    awful.key({ modkey, "Control" }, "m", function(c) c.maximized_vertical = not c.maximized_vertical; c:raise() end,
         { description = "(un)maximize vertically", group = "client" }),
-    awful.key({ modkey, "Shift"   }, "m", function(c)
-        c.maximized_horizontal = not c.maximized_horizontal
-        c:raise()
-    end,
+    awful.key({ modkey, "Shift"   }, "m", function(c) c.maximized_horizontal = not c.maximized_horizontal; c:raise() end,
         { description = "(un)maximize horizontally", group = "client" }),
+
+    -- Move and resize floaters
     awful.key({ altkey }, "Next", function(c) c:relative_move(20, 20, -40, -40) end,
         { description = "decrease client size", group = "client" }),
     awful.key({ altkey }, "Prior", function(c) c:relative_move(-20, -20, 40, 40) end,
@@ -327,7 +322,11 @@ clientkeys = my_table.join(
     awful.key({ altkey }, "Left", function(c) c:relative_move(-20, 0, 0, 0) end,
         { description = "move client left", group = "client" }),
     awful.key({ altkey }, "Right", function(c) c:relative_move( 20, 0, 0, 0) end,
-        { description = "move client right", group = "client" })
+        { description = "move client right", group = "client" }),
+
+    -- Toggle titlebar
+    awful.key({ modkey, "Shift" }, "t", awful.titlebar.toggle,
+        { description = "toggle titlebar", group = "client" })
 )
 
 -- Bind all key numbers to tags.
@@ -400,7 +399,7 @@ awful.rules.rules = {
             keys = clientkeys,
             buttons = clientbuttons,
             screen = awful.screen.preferred,
-            placement = awful.placement.no_overlap+awful.placement.no_offscreen,
+            placement = awful.placement.no_overlap + awful.placement.no_offscreen,
             -- maximized_vertical = false,
             -- maximized_horizontal = false
         }
@@ -543,6 +542,16 @@ client.connect_signal("focus", function(c)
         c.border_width = beautiful.border_width
         c.border_color = beautiful.border_focus
     end
+
+    --[[
+    -- test rounded corners
+    if not c.fullscreen then
+        c.shape = function(cr, w, h)
+            gears.shape.rounded_rect(cr, w, h, dpi(8))
+            -- c.border_width = dpi(2)
+        end
+    end
+    --]]
 end)
 
 client.connect_signal("unfocus", function(c) c.border_color = beautiful.border_normal end)

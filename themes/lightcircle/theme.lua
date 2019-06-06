@@ -11,7 +11,6 @@ local my_table                                      = awful.util.table or gears.
 local surface                                       = gears.surface.load_from_shape
 local shape                                         = gears.shape
 
-
 local theme                                         = {}
 -- theme.confdir                                    = gfs.get_xdg_config_home() .. "awesome/themes/lightcircle"
 theme.confdir                                       = gfs.get_configuration_dir() .. "themes/lightcircle"
@@ -19,8 +18,6 @@ theme.wallpaper                                     = theme.confdir .. "/wallpap
 
 theme.font                                          = "TerminessTTFNerdFontMono 10"
 theme.icon_theme                                    = "Papirus-Dark"
-theme.useless_gap                                   = dpi(4)
--- theme.gap_single_client                             = false
 
 theme.colors                                        = {
     transparent  = "#00000000",
@@ -35,31 +32,27 @@ theme.colors                                        = {
     tealdarken   = "#004D40"
 }
 
-theme.hotkeys_font                                  = "TerminessTTFNerdFontMono 12"
-theme.hotkeys_description_font                      = "TerminessTTFNerdFontMono 10"
-theme.hotkeys_shape                                 = shape.rounded_rect
-theme.hotkeys_border_width                          = dpi(2)
-theme.hotkeys_border_color                          = theme.border_focus
-theme.hotkeys_group_margin                          = dpi(40)
-
 theme.bg_normal                                     = "#222222AA"
--- theme.bg_normal                                     = theme.colors.bluegray
 theme.bg_focus                                      = "#333333"
 theme.bg_urgent                                     = theme.colors.red
 theme.bg_minimize                                   = "#444444"
-theme.bg_systray                                    = theme.bg_normal
-theme.systray_icon_spacing                          = dpi(3)
 
 theme.fg_normal                                     = "#aaaaaa"
 theme.fg_focus                                      = "#ffffff"
 theme.fg_urgent                                     = "#ffffff"
 theme.fg_minimize                                   = "#ffffff"
 
-theme.border_width                                  = dpi(1)
 theme.border_normal                                 = "#333333AA"
 theme.border_focus                                  = "#535d6c"
 theme.border_marked                                 = "#91231c"
+theme.border_width                                  = dpi(1)
 theme.maximized_hide_border                         = true
+
+theme.useless_gap                                   = dpi(4)
+theme.gap_single_client                             = true
+
+theme.bg_systray                                    = theme.bg_normal
+theme.systray_icon_spacing                          = dpi(3)
 
 theme.taglist_bg_focus                              = theme.colors.transparent
 theme.taglist_fg_focus                              = theme.colors.orangedeep
@@ -78,6 +71,13 @@ theme.menu_submenu_icon                             = theme.confdir .. "/icons/s
 theme.menu_height                                   = dpi(16)
 theme.menu_width                                    = dpi(120)
 theme.menu_border_width                             = dpi(0)
+
+theme.hotkeys_font                                  = "TerminessTTFNerdFontMono 12"
+theme.hotkeys_description_font                      = "TerminessTTFNerdFontMono 10"
+theme.hotkeys_shape                                 = shape.rounded_rect
+theme.hotkeys_border_color                          = theme.border_focus
+theme.hotkeys_border_width                          = dpi(2)
+theme.hotkeys_group_margin                          = dpi(40)
 
 theme.titlebar_close_button_normal                  = theme.confdir .. "/titlebar/close_normal.png"
 theme.titlebar_close_button_focus                   = theme.confdir .. "/titlebar/close_focus.png"
@@ -136,7 +136,6 @@ mytextclock.font = "TerminessTTFNerdFontMono bold 10.5"
 -- Launcher
 local mylauncher = awful.widget.button({ image = theme.arch_icon })
 mylauncher:connect_signal("button::press", function() awful.util.mymainmenu:toggle() end)
-
 
 --[[
 -- Slider
