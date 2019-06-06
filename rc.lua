@@ -542,6 +542,16 @@ client.connect_signal("focus", function(c)
         c.border_width = beautiful.border_width
         c.border_color = beautiful.border_focus
     end
+
+    --[[
+    -- test rounded corners
+    if not c.fullscreen then
+        c.shape = function(cr, w, h)
+            gears.shape.rounded_rect(cr, w, h, dpi(8))
+            -- c.border_width = dpi(2)
+        end
+    end
+    --]]
 end)
 
 client.connect_signal("unfocus", function(c) c.border_color = beautiful.border_normal end)
