@@ -250,7 +250,7 @@ function theme.on_screen_connect(s)
             layout = wibox.layout.fixed.horizontal,
             -- mylauncher,
             s.mytaglist,
-            s.mypromptbox,
+            s.mypromptbox
         },
         s.mytasklist, -- Middle widget
         { -- Right widgets
@@ -263,6 +263,24 @@ function theme.on_screen_connect(s)
         },
         layout = wibox.layout.align.horizontal,
     }
+
+    --[[ -- really need ?
+    s.mybottomwibox = awful.wibar(
+        { screen = s, position = "bottom", height = dpi(16) }
+    ) : setup {
+        { -- Left widgets
+            layout = wibox.layout.fixed.horizontal,
+            s.mypromptbox,
+        },
+        nil,
+        { -- Right widgets
+            layout = wibox.layout.fixed.horizontal,
+            wibox.widget.systray(),
+            s.mylayoutbox
+        },
+        layout = wibox.layout.align.horizontal,
+    }
+    --]]
 end
 
 return theme

@@ -62,6 +62,7 @@ local terminal1   = "urxvt -bg black -fg '#1793D1'"
 local terminal   = "termite"
 local editor     = os.getenv("EDITOR") or "vim"
 local gui_editor = "atom"
+local browser    = "chromium"
 local editor_cmd = terminal1 .. " -e " .. editor
 local modkey     = "Mod4"
 local altkey     = "Mod1"
@@ -278,12 +279,18 @@ globalkeys = my_table.join(
         { description = "toggle wibox", group = "awesome" }),
 
     -- Client menu as app switcher
-    awful.key({ altkey }, "Escape", function ()
+    awful.key({ altkey }, "Escape", function()
         -- If you want to always position the menu on the same place set coordinates
         awful.menu.menu_keys.down = { "Down", "Alt_L" }
         awful.menu.clients({ theme = { width = dpi(350) }}, { keygrabber = true, coords = { x = 525, y = 330} })
     end,
-        { description = "client menu application switcher", group = "launcher"})
+        { description = "client menu application switcher", group = "launcher"}),
+
+    -- Launch some apps
+    awful.key({ modkey }, "e", function() awful.spawn(gui_editor) end,
+        { description = "open editor", group = "launcher" }),
+    awful.key({ modkey }, "c", function() awful.spawn(browser) end,
+        { description = "open browser", group = "launcher" })
 )
 
 clientkeys = my_table.join(
