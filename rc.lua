@@ -54,18 +54,54 @@ naughty.config.defaults.margin    = dpi(15)
 naughty.config.defaults.icon_size = dpi(36)
 -- naughty.config.defaults.position  = "top_middle"
 
+-- {{{
+naughty.notify({
+    -- preset = naughty.config.presets.critical,
+    title = "Alert!",
+    text = "You're awesome",
+    timeout = 10,
+    icon         = beautiful.icon,
+    bg           = beautiful.bg_normal,
+    fg           = beautiful.fg_normal,
+    font         = 'xos4 Terminus',
+    border_width = dpi(4),
+    border_color = "#00ff00" ,
+    shape        = gears.shape.rounded_rect
+})
+
+local text = [[ An <b>important</b>: <i>notification</i> ]]
+naughty.notify({
+    -- preset = naughty.config.presets.normal,
+    title        = 'Hello Hackawax!',
+    text         = text,
+    icon         = beautiful.icon,
+    bg           = beautiful.bg_normal,
+    fg           = beautiful.fg_normal,
+    font         = 'xos4 Terminus 12',
+    border_width = dpi(4),
+    border_color = "#ff0000",
+    -- border_color = beautiful.bg_urgent,
+    margin       = dpi(40),
+    -- shape        = gears.shape.rounded_rect,
+    shape        = function(cr,w,h)
+        return gears.shape.infobubble(cr, w, h, dpi(20), dpi(10), w/2 - dpi(10))
+    end,
+})
+-- }}}
+
 -- {{{ Variable definitions
 local themes_path = gfs.get_configuration_dir() .. "themes"
 beautiful.init(themes_path .. "/lightcircle/theme.lua")
 
 local terminal1   = "urxvt -bg black -fg '#1793D1'"
-local terminal   = "termite"
-local editor     = os.getenv("EDITOR") or "vim"
-local gui_editor = "atom"
-local browser    = "chromium"
-local editor_cmd = terminal1 .. " -e " .. editor
-local modkey     = "Mod4"
-local altkey     = "Mod1"
+local terminal    = "termite"
+local editor      = os.getenv("EDITOR") or "vim"
+local gui_editor  = "atom"
+local browser     = "chromium"
+local filemanager = "pcmanfm"
+local editor_cmd  = terminal1 .. " -e " .. editor
+local modkey      = "Mod4"
+local altkey      = "Mod1"
 
 -- awful.util.tagnames = { " 1 " , " 2 ", " 3 ", " 4 ", " 5 " }
 awful.util.tagnames = { " Office ", " URxvt ", " Web ", " IDE ", " DEV " }
@@ -90,7 +126,7 @@ awful.util.tagnames = { " Office ", " URxvt ", " Web ", " IDE ", " DEV " }
      -- awful.layout.suit.corner.se,
 }
 
---[[
+--[[ TODO >>>
 awful.tag.add("Office", {
     icon = beautiful.awesome_icon,
     layout = awful.layout.suit.floating,
@@ -109,6 +145,12 @@ awful.tag.add("Term", {
 })
 
 awful.tag.add("IDE", {
+    screen = s,
+    icon = "",
+    layout = awful.layout.suit.tile.left
+})
+
+awful.tag.add("DEV", {
     screen = s,
     icon = "",
     layout = awful.layout.suit.tile.left
@@ -165,6 +207,7 @@ awful.util.tasklist_buttons = my_table.join(
             c:emit_signal("request::activate", "tasklist", { raise = true })
         end
     end),
+    awful.button({ }, 2, function(c) c:kill() end),
     awful.button({ }, 3, function() awful.menu.client_list({ theme = { width = dpi(350) } }) end),
     awful.button({ }, 4, function() awful.client.focus.byidx(1) end),
     awful.button({ }, 5, function() awful.client.focus.byidx(-1) end))
@@ -260,7 +303,7 @@ globalkeys = my_table.join(
 
     awful.key({ modkey }, "x", function()
         awful.prompt.run {
-            prompt       = "Lua: ",
+            prompt       = "Lua > ",
             textbox      = awful.screen.focused().mypromptbox.widget,
             exe_callback = awful.util.eval,
             history_path = awful.util.get_cache_dir() .. "/history_eval"
@@ -284,13 +327,15 @@ globalkeys = my_table.join(
         awful.menu.menu_keys.down = { "Down", "Alt_L" }
         awful.menu.clients({ theme = { width = dpi(350) }}, { keygrabber = true, coords = { x = 525, y = 330} })
     end,
-        { description = "client menu application switcher", group = "launcher"}),
+        { description = "client menu application switcher", group = "launcher" }),
 
     -- Launch some apps
     awful.key({ modkey }, "e", function() awful.spawn(gui_editor) end,
         { description = "open editor", group = "launcher" }),
     awful.key({ modkey }, "c", function() awful.spawn(browser) end,
-        { description = "open browser", group = "launcher" })
+        { description = "open browser", group = "launcher" }),
+    awful.key({ modkey }, "a", function() awful.spawn(filemanager) end,
+        { description = "open filemanager", group = "launcher" })
 )
 
 clientkeys = my_table.join(
