@@ -79,6 +79,17 @@ theme.hotkeys_border_color                          = theme.border_focus
 theme.hotkeys_border_width                          = dpi(2)
 theme.hotkeys_group_margin                          = dpi(40)
 
+theme.notification_shape                            = shape.infobubble
+theme.notification_margin                           = dpi(20)
+theme.notification_padding                          = dpi(5)
+theme.notification_bg                               = theme.colors.bluegray
+theme.notification_fg                               = "#D26937"
+-- theme.notification_fg                               = "#4C566A"
+
+theme.taglist_squares_sel                           = surface(dpi(5), dpi(5), shape.circle, theme.taglist_fg_focus)
+-- theme.taglist_squares_sel                           = surface(dpi(25), dpi(4), shape.rounded_bar, theme.taglist_fg_focus)
+theme.taglist_squares_unsel                         = surface(dpi(10), dpi(5), shape.rounded_bar, theme.bg_minimize)
+
 theme.titlebar_close_button_normal                  = theme.confdir .. "/titlebar/close_normal.png"
 theme.titlebar_close_button_focus                   = theme.confdir .. "/titlebar/close_focus.png"
 theme.titlebar_minimize_button_normal               = theme.confdir .. "/titlebar/minimize_normal.png"
@@ -117,21 +128,25 @@ theme.layout_cornerne                               = theme.confdir .. "/layouts
 theme.layout_cornersw                               = theme.confdir .. "/layouts/cornersw.svg"
 theme.layout_cornerse                               = theme.confdir .. "/layouts/cornerse.svg"
 
-theme.notification_shape                            = shape.infobubble
-theme.notification_margin                           = dpi(20)
-theme.notification_padding                          = dpi(5)
-theme.notification_bg                               = theme.colors.bluegray
-theme.notification_fg                               = "#D26937"
--- theme.notification_fg                               = "#4C566A"
-
-theme.taglist_squares_sel                           = surface(dpi(5), dpi(5), shape.circle, theme.taglist_fg_focus)
--- theme.taglist_squares_sel                           = surface(dpi(25), dpi(4), shape.rounded_bar, theme.taglist_fg_focus)
-theme.taglist_squares_unsel                         = surface(dpi(10), dpi(5), shape.rounded_bar, theme.bg_minimize)
-
 -- Widget
+theme.widget_clock                                  = theme.confdir .. "/icons/clock.png"
+
 -- Create a textclock widget
+os.setlocale(os.getenv("LANG"))
+local clockicon   = wibox.widget.imagebox(theme.widget_clock)
 local mytextclock = wibox.widget.textclock(" %H:%M ")
-mytextclock.font = "TerminessTTFNerdFontMono bold 10.5"
+mytextclock.font  = "TerminessTTFNerdFontMono bold 9"
+
+local clocktip = awful.tooltip {
+    tooltip_font = theme.font,
+    tooltip_bg   = theme.bg_normal
+}
+clocktip:add_to_object(mytextclock)
+mytextclock:connect_signal('mouse::enter',
+    function()
+        clocktip.text = os.date('Date:\t\t %A %d %B %Y \nHeure:\t\t %T')
+    end
+)
 
 -- Launcher
 local mylauncher = awful.widget.button({ image = theme.arch_icon })
@@ -248,20 +263,71 @@ function theme.on_screen_connect(s)
     s.mywibox:setup {
         { -- Left widgets
             layout = wibox.layout.fixed.horizontal,
-            -- mylauncher,
+            {
+                layout = wibox.container.background,
+                bg     = theme.colors.bluegray,
+                {
+                    layout  = wibox.container.margin,
+                    margins = dpi(2),
+                    mylauncher,
+                },
+                shape              = shape.rounded_rect,
+                shape_border_width = dpi(1),
+                shape_border_color = theme.colors.bluegray,
+            },
             s.mytaglist,
             s.mypromptbox
         },
-        s.mytasklist, -- Middle widget
+        -- s.mytasklist -- Middle widget
+        {
+            layout = wibox.container.background,
+            bg     = theme.colors.bluegray,
+            {
+                layout  = wibox.container.margin,
+                margins = dpi(4),
+                s.mytasklist,
+            },
+            shape              = shape.rounded_bar,
+            shape_border_width = dpi(1),
+            shape_border_color = theme.colors.bluegray,
+        },
         { -- Right widgets
             layout = wibox.layout.fixed.horizontal,
             -- mykeyboardlayout,
             -- slider,
             wibox.widget.systray(),
-            mytextclock,
-            s.mylayoutbox
+            clockicon,
+            {
+                layout = awful.widget.only_on_screen,
+                screen = 1, -- Only display on screen 1
+                {
+                    layout = wibox.container.background,
+                    bg     = theme.colors.bluegray,
+                    {
+                        layout  = wibox.container.margin,
+                        margins = dpi(1),
+                        mytextclock,
+                    },
+                    shape              = shape.rounded_bar,
+                    shape_border_width = dpi(1),
+                    shape_border_color = theme.colors.bluegray,
+                }
+            },
+            -- s.mylayoutbox
+            {
+                layout = wibox.container.background,
+                bg     = theme.colors.bluegray,
+                {
+                    layout  = wibox.container.margin,
+                    margins = dpi(4),
+                    s.mylayoutbox,
+                },
+                shape              = shape.rounded_bar,
+                shape_border_width = dpi(1),
+                shape_border_color = theme.colors.bluegray,
+            }
         },
-        layout = wibox.layout.align.horizontal,
+        layout = wibox.layout.align.horizontal, -- wlayout_aligh_h
     }
 
     --[[ -- really need ?

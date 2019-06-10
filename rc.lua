@@ -54,18 +54,54 @@ naughty.config.defaults.margin    = dpi(15)
 naughty.config.defaults.icon_size = dpi(36)
 -- naughty.config.defaults.position  = "top_middle"
 
+-- {{{
+naughty.notify({
+    -- preset = naughty.config.presets.critical,
+    title = "Alert!",
+    text = "You're awesome",
+    timeout = 10,
+    icon         = beautiful.icon,
+    bg           = beautiful.bg_normal,
+    fg           = beautiful.fg_normal,
+    font         = 'xos4 Terminus',
+    border_width = dpi(4),
+    border_color = "#00ff00" ,
+    shape        = gears.shape.rounded_rect
+})
+
+local text = [[ An <b>important</b>: <i>notification</i> ]]
+naughty.notify({
+    -- preset = naughty.config.presets.normal,
+    title        = 'Hello Hackawax!',
+    text         = text,
+    icon         = beautiful.icon,
+    bg           = beautiful.bg_normal,
+    fg           = beautiful.fg_normal,
+    font         = 'xos4 Terminus 12',
+    border_width = dpi(4),
+    border_color = "#ff0000",
+    -- border_color = beautiful.bg_urgent,
+    margin       = dpi(40),
+    -- shape        = gears.shape.rounded_rect,
+    shape        = function(cr,w,h)
+        return gears.shape.infobubble(cr, w, h, dpi(20), dpi(10), w/2 - dpi(10))
+    end,
+})
+-- }}}
+
 -- {{{ Variable definitions
 local themes_path = gfs.get_configuration_dir() .. "themes"
 beautiful.init(themes_path .. "/lightcircle/theme.lua")
 
 local terminal1   = "urxvt -bg black -fg '#1793D1'"
-local terminal   = "termite"
-local editor     = os.getenv("EDITOR") or "vim"
-local gui_editor = "atom"
-local browser    = "chromium"
-local editor_cmd = terminal1 .. " -e " .. editor
-local modkey     = "Mod4"
-local altkey     = "Mod1"
+local terminal    = "termite"
+local editor      = os.getenv("EDITOR") or "vim"
+local gui_editor  = "atom"
+local browser     = "chromium"
+local filemanager = "pcmanfm"
+local editor_cmd  = terminal1 .. " -e " .. editor
+local modkey      = "Mod4"
+local altkey      = "Mod1"
 
 -- awful.util.tagnames = { " 1 " , " 2 ", " 3 ", " 4 ", " 5 " }
 awful.util.tagnames = { " Office ", " URxvt ", " Web ", " IDE ", " DEV " }
@@ -90,7 +126,7 @@ awful.util.tagnames = { " Office ", " URxvt ", " Web ", " IDE ", " DEV " }
      -- awful.layout.suit.corner.se,
 }
 
---[[
+--[[ TODO >>>
 awful.tag.add("Office", {
     icon = beautiful.awesome_icon,
     layout = awful.layout.suit.floating,
@@ -109,6 +145,12 @@ awful.tag.add("Term", {
 })
 
 awful.tag.add("IDE", {
+    screen = s,
+    icon = "",
+    layout = awful.layout.suit.tile.left
+})
+
+awful.tag.add("DEV", {
     screen = s,
     icon = "",
     layout = awful.layout.suit.tile.left
@@ -165,6 +207,7 @@ awful.util.tasklist_buttons = my_table.join(
             c:emit_signal("request::activate", "tasklist", { raise = true })
         end
     end),
+    awful.button({ }, 2, function(c) c:kill() end),
     awful.button({ }, 3, function() awful.menu.client_list({ theme = { width = dpi(350) } }) end),
     awful.button({ }, 4, function() awful.client.focus.byidx(1) end),
     awful.button({ }, 5, function() awful.client.focus.byidx(-1) end))
@@ -225,7 +268,8 @@ globalkeys = my_table.join(
     -- Standard program
     awful.key({ modkey,           }, "Return", function() awful.spawn(terminal) end,
         { description = "open a terminal", group = "launcher" }),
-    awful.key({ modkey, "Control" }, "r", awesome.restart,
+    -- awful.key({ modkey, "Control" }, "r", awesome.restart,
+    awful.key({                   }, "F1", awesome.restart,
         { description = "reload awesome", group = "awesome" }),
     awful.key({ modkey, "Shift"   }, "q", awesome.quit,
         { description = "quit awesome", group = "awesome" }),
@@ -260,7 +304,7 @@ globalkeys = my_table.join(
 
     awful.key({ modkey }, "x", function()
         awful.prompt.run {
-            prompt       = "Lua: ",
+            prompt       = "Lua > ",
             textbox      = awful.screen.focused().mypromptbox.widget,
             exe_callback = awful.util.eval,
             history_path = awful.util.get_cache_dir() .. "/history_eval"
@@ -284,13 +328,15 @@ globalkeys = my_table.join(
         awful.menu.menu_keys.down = { "Down", "Alt_L" }
         awful.menu.clients({ theme = { width = dpi(350) }}, { keygrabber = true, coords = { x = 525, y = 330} })
     end,
-        { description = "client menu application switcher", group = "launcher"}),
+        { description = "client menu application switcher", group = "launcher" }),
 
     -- Launch some apps
     awful.key({ modkey }, "e", function() awful.spawn(gui_editor) end,
         { description = "open editor", group = "launcher" }),
     awful.key({ modkey }, "c", function() awful.spawn(browser) end,
-        { description = "open browser", group = "launcher" })
+        { description = "open browser", group = "launcher" }),
+    awful.key({ modkey }, "a", function() awful.spawn(filemanager) end,
+        { description = "open filemanager", group = "launcher" })
 )
 
 clientkeys = my_table.join(
@@ -317,19 +363,52 @@ clientkeys = my_table.join(
     awful.key({ modkey, "Shift"   }, "m", function(c) c.maximized_horizontal = not c.maximized_horizontal; c:raise() end,
         { description = "(un)maximize horizontally", group = "client" }),
 
-    -- Move and resize floaters
-    awful.key({ altkey }, "Next", function(c) c:relative_move(20, 20, -40, -40) end,
-        { description = "decrease client size", group = "client" }),
-    awful.key({ altkey }, "Prior", function(c) c:relative_move(-20, -20, 40, 40) end,
-        { description = "increase client size", group = "client" }),
+    -- Move and resize only floating clients
+    -- Move client left/right/top/bottom
     awful.key({ altkey }, "Down", function(c) c:relative_move(0, 20, 0, 0) end,
-        { description = "move client down", group = "client" }),
+        { description = "move client down", group = "client floaters resize and move" }),
     awful.key({ altkey }, "Up", function(c) c:relative_move(0, -20, 0, 0) end,
-        { description = "move client up", group = "client" }),
+        { description = "move client up", group = "client floaters resize and move" }),
     awful.key({ altkey }, "Left", function(c) c:relative_move(-20, 0, 0, 0) end,
-        { description = "move client left", group = "client" }),
+        { description = "move client left", group = "client floaters resize and move" }),
     awful.key({ altkey }, "Right", function(c) c:relative_move( 20, 0, 0, 0) end,
-        { description = "move client right", group = "client" }),
+        { description = "move client right", group = "client floaters resize and move" }),
+    -- Resize both client width/height
+    awful.key({ altkey }, "Next", function(c) c:relative_move(20, 20, -40, -40) end,
+        { description = "decrease client width and height size", group = "client floaters resize and move" }),
+    awful.key({ altkey }, "Prior", function(c) c:relative_move(-20, -20, 40, 40) end,
+        { description = "increase client width and height size", group = "client floaters resize and move" }),
+    -- Resize client height
+    awful.key({ altkey, "Shift" }, "Next", function(c) c:relative_move(0, 20, 0,-40) end,
+        { description = "decrease client height size", group = "client floaters resize and move" }),
+    awful.key({ altkey, "Shift" }, "Prior", function(c) c:relative_move(0, -20, 0, 40) end,
+        { description = "increase client height size", group = "client floaters resize and move" }),
+    -- Resize client width
+    awful.key({ modkey, "Shift" }, "Next", function(c) c:relative_move(20, 0, -40, 0) end,
+        { description = "increase client width size", group = "client floaters resize and move" }),
+    awful.key({ modkey, "Shift" }, "Prior", function(c) c:relative_move(-20, 0, 40, 0) end,
+        { description = "decrease client width size", group = "client floaters resize and move" }),
+    -- Resize client side by side
+    -- Resize left
+    awful.key({ altkey, "Shift" }, "Right", function(c) c:relative_move(20, 0, -20, 0) end,
+        { description = "decrease client left side", group = "client floaters resize and move" }),
+    awful.key({ altkey, "Shift" }, "Left", function(c) c:relative_move(-20, 0, 20, 0) end,
+        { description = "increase client left side", group = "client floaters resize and move" }),
+    -- Resize right
+    awful.key({ modkey, "Shift" }, "Left", function(c) c:relative_move(0, 0, -20, 0) end,
+        { description = "decrease client right side", group = "client floaters resize and move" }),
+    awful.key({ modkey, "Shift" }, "Right", function(c) c:relative_move(0, 0, 20, 0) end,
+        { description = "increase client right side", group = "client floaters resize and move" }),
+    -- Resize top
+    awful.key({ altkey, "Shift" }, "Down", function(c) c:relative_move(0, 20, 0, -20) end,
+        { description = "decrease client top side", group = "client floaters resize and move" }),
+    awful.key({ altkey, "Shift" }, "Up", function(c) c:relative_move(0, -20, 0, 20) end,
+        { description = "increase client top side", group = "client floaters resize and move" }),
+    -- Resize bottom
+    awful.key({ modkey, "Shift" }, "Up", function(c) c:relative_move(0, 0, 0, -20) end,
+        { description = "decrease bottom left side", group = "client floaters resize and move" }),
+    awful.key({ modkey, "Shift" }, "Down", function(c) c:relative_move(0, 0, 0, 20) end,
+        { description = "increase client bottom side", group = "client floaters resize and move" }),
 
     -- Toggle titlebar
     awful.key({ modkey, "Shift" }, "t", awful.titlebar.toggle,
