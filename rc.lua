@@ -1,7 +1,7 @@
 -- If LuaRocks is installed, make sure that packages installed through it are
 -- found (e.g. lgi). If LuaRocks is not installed, do nothing.
 pcall(require, "luarocks.loader")
-
+local os = os
 -- {{{ Standard awesome library
 local gears         = require("gears")
 local awful         = require("awful")
@@ -74,6 +74,7 @@ naughty.notify({
 })
 
 local text = [[ An <b>important</b>: <i>notification</i> ]]
+
 naughty.notify({
     -- preset = naughty.config.presets.normal,
     title        = 'Hello Hackawax!',
@@ -91,6 +92,7 @@ naughty.notify({
         return gears.shape.infobubble(cr, w, h, dpi(20), dpi(10), w/2 - dpi(10))
     end,
 })
+
 -- }}}
 
 -- {{{ Variable definitions
@@ -343,8 +345,13 @@ globalkeys = my_table.join(
         { description = "open filemanager", group = "launcher" }),
 
     -- Screenshot
-    awful.key({ }, "Print", function() os.execute("screenshot") end,
-        { description = "Take a screenshot", group = "awesome"})
+    -- https://github.com/Ramzi-B/MyConfig_Files/blob/master/screenshot
+    -- In this way awesome freezes for a while and leaves again
+    -- awful.key({ altkey, }, "Print", function() os.execute("screenshot") end,
+
+    -- this way the mouse cursor stays in reload mode but it works
+    awful.key({ }, "Print", function() awful.spawn("screenshot") end,
+        { description = "Take a fullcreenshot", group = "awesome" })
 )
 
 clientkeys = my_table.join(
@@ -373,49 +380,49 @@ clientkeys = my_table.join(
 
     -- Move and resize only floating clients
     -- Move client left/right/top/bottom
-    awful.key({ altkey }, "Down", function(c) c:relative_move(0, 20, 0, 0) end,
+    awful.key({ altkey }, "Down", function(c) c:relative_move(0, dpi(20), 0, 0) end,
         { description = "move client down", group = "client floaters resize and move" }),
-    awful.key({ altkey }, "Up", function(c) c:relative_move(0, -20, 0, 0) end,
+    awful.key({ altkey }, "Up", function(c) c:relative_move(0, dpi(-20), 0, 0) end,
         { description = "move client up", group = "client floaters resize and move" }),
-    awful.key({ altkey }, "Left", function(c) c:relative_move(-20, 0, 0, 0) end,
+    awful.key({ altkey }, "Left", function(c) c:relative_move(dpi(-20), 0, 0, 0) end,
         { description = "move client left", group = "client floaters resize and move" }),
-    awful.key({ altkey }, "Right", function(c) c:relative_move( 20, 0, 0, 0) end,
+    awful.key({ altkey }, "Right", function(c) c:relative_move(dpi(20), 0, 0, 0) end,
         { description = "move client right", group = "client floaters resize and move" }),
     -- Resize both client width/height
-    awful.key({ altkey }, "Next", function(c) c:relative_move(20, 20, -40, -40) end,
+    awful.key({ altkey }, "Next", function(c) c:relative_move(dpi(20), dpi(20), dpi(-40), dpi(-40)) end,
         { description = "decrease client width and height size", group = "client floaters resize and move" }),
-    awful.key({ altkey }, "Prior", function(c) c:relative_move(-20, -20, 40, 40) end,
+    awful.key({ altkey }, "Prior", function(c) c:relative_move(dpi(-20), dpi(-20), dpi(40), dpi(40)) end,
         { description = "increase client width and height size", group = "client floaters resize and move" }),
     -- Resize client height
-    awful.key({ altkey, "Shift" }, "Next", function(c) c:relative_move(0, 20, 0,-40) end,
+    awful.key({ altkey, "Shift" }, "Next", function(c) c:relative_move(0, dpi(20), 0,dpi(-40)) end,
         { description = "decrease client height size", group = "client floaters resize and move" }),
-    awful.key({ altkey, "Shift" }, "Prior", function(c) c:relative_move(0, -20, 0, 40) end,
+    awful.key({ altkey, "Shift" }, "Prior", function(c) c:relative_move(0, dpi(-20), 0, dpi(40)) end,
         { description = "increase client height size", group = "client floaters resize and move" }),
     -- Resize client width
-    awful.key({ modkey, "Shift" }, "Next", function(c) c:relative_move(20, 0, -40, 0) end,
+    awful.key({ modkey, "Shift" }, "Next", function(c) c:relative_move(dpi(20), 0, dpi(-40), 0) end,
         { description = "increase client width size", group = "client floaters resize and move" }),
-    awful.key({ modkey, "Shift" }, "Prior", function(c) c:relative_move(-20, 0, 40, 0) end,
+    awful.key({ modkey, "Shift" }, "Prior", function(c) c:relative_move(dpi(-20), 0, dpi(40), 0) end,
         { description = "decrease client width size", group = "client floaters resize and move" }),
     -- Resize client side by side
     -- Resize left
-    awful.key({ altkey, "Shift" }, "Right", function(c) c:relative_move(20, 0, -20, 0) end,
+    awful.key({ altkey, "Shift" }, "Right", function(c) c:relative_move(dpi(20), 0, dpi(-20), 0) end,
         { description = "decrease client left side", group = "client floaters resize and move" }),
-    awful.key({ altkey, "Shift" }, "Left", function(c) c:relative_move(-20, 0, 20, 0) end,
+    awful.key({ altkey, "Shift" }, "Left", function(c) c:relative_move(dpi(-20), 0, dpi(20), 0) end,
         { description = "increase client left side", group = "client floaters resize and move" }),
     -- Resize right
-    awful.key({ modkey, "Shift" }, "Left", function(c) c:relative_move(0, 0, -20, 0) end,
+    awful.key({ modkey, "Shift" }, "Left", function(c) c:relative_move(0, 0, dpi(-20), 0) end,
         { description = "decrease client right side", group = "client floaters resize and move" }),
-    awful.key({ modkey, "Shift" }, "Right", function(c) c:relative_move(0, 0, 20, 0) end,
+    awful.key({ modkey, "Shift" }, "Right", function(c) c:relative_move(0, 0, dpi(20), 0) end,
         { description = "increase client right side", group = "client floaters resize and move" }),
     -- Resize top
-    awful.key({ altkey, "Shift" }, "Down", function(c) c:relative_move(0, 20, 0, -20) end,
+    awful.key({ altkey, "Shift" }, "Down", function(c) c:relative_move(0, dpi(20), 0, dpi(-20)) end,
         { description = "decrease client top side", group = "client floaters resize and move" }),
-    awful.key({ altkey, "Shift" }, "Up", function(c) c:relative_move(0, -20, 0, 20) end,
+    awful.key({ altkey, "Shift" }, "Up", function(c) c:relative_move(0, dpi(-20), 0, dpi(20)) end,
         { description = "increase client top side", group = "client floaters resize and move" }),
     -- Resize bottom
-    awful.key({ modkey, "Shift" }, "Up", function(c) c:relative_move(0, 0, 0, -20) end,
+    awful.key({ modkey, "Shift" }, "Up", function(c) c:relative_move(0, 0, 0, dpi(-20)) end,
         { description = "decrease bottom left side", group = "client floaters resize and move" }),
-    awful.key({ modkey, "Shift" }, "Down", function(c) c:relative_move(0, 0, 0, 20) end,
+    awful.key({ modkey, "Shift" }, "Down", function(c) c:relative_move(0, 0, 0, dpi(20)) end,
         { description = "increase client bottom side", group = "client floaters resize and move" }),
 
     -- Toggle titlebar
