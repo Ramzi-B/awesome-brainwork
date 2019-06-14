@@ -64,9 +64,13 @@ naughty.notify({
     bg           = beautiful.bg_normal,
     fg           = beautiful.fg_normal,
     font         = 'xos4 Terminus',
+    margin       = dpi(40),
     border_width = dpi(4),
     border_color = "#00ff00" ,
-    shape        = gears.shape.rounded_rect
+    -- shape        = gears.shape.rounded_rect
+    shape        = function(cr, w, h)
+        return gears.shape.infobubble(cr, w, h, dpi(10), dpi(10), w/2 - dpi(10))
+    end,
 })
 
 local text = [[ An <b>important</b>: <i>notification</i> ]]
@@ -80,10 +84,10 @@ naughty.notify({
     font         = 'xos4 Terminus 12',
     border_width = dpi(4),
     border_color = "#ff0000",
-    -- border_color = beautiful.bg_urgent,
+--    border_color = beautiful.bg_urgent,
     margin       = dpi(40),
     -- shape        = gears.shape.rounded_rect,
-    shape        = function(cr,w,h)
+    shape        = function(cr, w, h)
         return gears.shape.infobubble(cr, w, h, dpi(20), dpi(10), w/2 - dpi(10))
     end,
 })
@@ -336,7 +340,11 @@ globalkeys = my_table.join(
     awful.key({ modkey }, "c", function() awful.spawn(browser) end,
         { description = "open browser", group = "launcher" }),
     awful.key({ modkey }, "a", function() awful.spawn(filemanager) end,
-        { description = "open filemanager", group = "launcher" })
+        { description = "open filemanager", group = "launcher" }),
+
+    -- Screenshot
+    awful.key({ }, "Print", function() os.execute("screenshot") end,
+        { description = "Take a screenshot", group = "awesome"})
 )
 
 clientkeys = my_table.join(

@@ -65,7 +65,8 @@ theme.tasklist_plain_task_name                      = false
 theme.tasklist_disable_task_name                    = true
 
 theme.awesome_icon                                  = theme.confdir .. "/icons/awesome.png"
-theme.arch_icon                                     = theme.confdir .. "/icons/arch.png"
+-- theme.arch_icon                                     = theme.confdir .. "/icons/arch.png"
+theme.arch_icon                                     = theme.confdir .. "/icons/menu.svg"
 
 theme.menu_submenu_icon                             = theme.confdir .. "/icons/submenuplay.png"
 theme.menu_height                                   = dpi(16)
@@ -129,7 +130,7 @@ theme.layout_cornersw                               = theme.confdir .. "/layouts
 theme.layout_cornerse                               = theme.confdir .. "/layouts/cornerse.svg"
 
 -- Widget
-theme.widget_clock                                  = theme.confdir .. "/icons/clock.png"
+theme.widget_clock                                  = theme.confdir .. "/icons/clock.svg"
 
 -- Create a textclock widget
 os.setlocale(os.getenv("LANG"))
@@ -268,7 +269,7 @@ function theme.on_screen_connect(s)
                 bg     = theme.colors.bluegray,
                 {
                     layout  = wibox.container.margin,
-                    margins = dpi(2),
+                    margins = dpi(4),
                     mylauncher,
                 },
                 shape              = shape.rounded_rect,
@@ -299,13 +300,13 @@ function theme.on_screen_connect(s)
             clockicon,
             {
                 layout = awful.widget.only_on_screen,
-                screen = 1, -- Only display on screen 1
+                screen = "primary" or 1, -- Only display on screen 1
                 {
                     layout = wibox.container.background,
                     bg     = theme.colors.bluegray,
                     {
                         layout  = wibox.container.margin,
-                        margins = dpi(1),
+                        margins = dpi(4),
                         mytextclock,
                     },
                     shape              = shape.rounded_bar,
