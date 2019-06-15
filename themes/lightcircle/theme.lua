@@ -258,13 +258,14 @@ function theme.on_screen_connect(s)
     --]]
 
     -- Create the wibox
-    s.mywibox = awful.wibar({ screen = s,  position = "top", height = dpi(18) })
+    s.mywibox = awful.wibar({ screen = s,  position = "top", height = dpi(20) })
 
     -- Add widgets to the wibox
     s.mywibox:setup {
-        { -- Left widgets
+        -- Left widgets
+        {
             layout = wibox.layout.fixed.horizontal,
-            {
+            { -- mylauncher
                 layout = wibox.container.background,
                 bg     = theme.colors.bluegray,
                 {
@@ -279,26 +280,58 @@ function theme.on_screen_connect(s)
             s.mytaglist,
             s.mypromptbox
         },
-        -- s.mytasklist -- Middle widget
-        {
+        -- Middle widget
+        { -- s.mytasklist
             layout = wibox.container.background,
             bg     = theme.colors.bluegray,
             {
                 layout  = wibox.container.margin,
-                margins = dpi(4),
+                margins = dpi(3),
                 s.mytasklist,
             },
             shape              = shape.rounded_bar,
             shape_border_width = dpi(1),
             shape_border_color = theme.colors.bluegray,
         },
-        { -- Right widgets
+        -- Right widgets
+        {
             layout = wibox.layout.fixed.horizontal,
             -- mykeyboardlayout,
             -- slider,
-            wibox.widget.systray(),
-            clockicon,
-            {
+            -- wibox.widget.systray(),
+            { -- systray
+                layout = awful.widget.only_on_screen,
+                screen = "primary" or 1, -- Only display on screen 1
+                {
+                    layout = wibox.container.background,
+                    bg     = theme.colors.bluegray,
+                    {
+                        layout  = wibox.container.margin,
+                        margins = dpi(3),
+                        wibox.widget.systray(),
+                    },
+                    shape              = shape.rounded_bar,
+                    shape_border_width = dpi(1),
+                    shape_border_color = theme.colors.bluegray,
+                }
+            },
+            { -- clockicon
+                layout = awful.widget.only_on_screen,
+                screen = "primary" or 1, -- Only display on screen 1
+                {
+                    layout = wibox.container.background,
+                    bg     = theme.colors.bluegray,
+                    {
+                        layout  = wibox.container.margin,
+                        margins = dpi(4),
+                        clockicon,
+                    },
+                    shape              = shape.rounded_bar,
+                    shape_border_width = dpi(1),
+                    shape_border_color = theme.colors.bluegray,
+                }
+            },
+            { -- mytextclock
                 layout = awful.widget.only_on_screen,
                 screen = "primary" or 1, -- Only display on screen 1
                 {
@@ -312,10 +345,9 @@ function theme.on_screen_connect(s)
                     shape              = shape.rounded_bar,
                     shape_border_width = dpi(1),
                     shape_border_color = theme.colors.bluegray,
-                }
+                },
             },
-            -- s.mylayoutbox
-            {
+            { -- s.mylayoutbox
                 layout = wibox.container.background,
                 bg     = theme.colors.bluegray,
                 {

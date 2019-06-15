@@ -1,6 +1,8 @@
 -- If LuaRocks is installed, make sure that packages installed through it are
 -- found (e.g. lgi). If LuaRocks is not installed, do nothing.
 pcall(require, "luarocks.loader")
+-- pcall(function() jit.on() end)
+
 local os = os
 -- {{{ Standard awesome library
 local gears         = require("gears")
@@ -50,10 +52,17 @@ end
 
 -- Naughty defaults
 -- naughty.config.defaults.screen    = 3
-naughty.config.defaults.margin    = dpi(15)
-naughty.config.defaults.icon_size = dpi(36)
+naughty.config.defaults.margin       = dpi(35)
+naughty.config.defaults.icon_size    = dpi(64)
+naughty.config.defaults.border_width = dpi(1)
+-- naughty.config.defaults.border_color = beautiful.bg_normal
+naughty.config.defaults.border_color = "#EF6C00"
 -- naughty.config.defaults.position  = "top_middle"
+naughty.config.defaults.shape        = function(cr, w, h)
+    return gears.shape.rounded_rect(cr, w, h, dpi(8))
+end
 
+--[[ -- Test
 -- {{{
 naughty.notify({
     -- preset = naughty.config.presets.critical,
@@ -74,7 +83,8 @@ naughty.notify({
 })
 
 local text = [[ An <b>important</b>: <i>notification</i> ]]
-
+--]]
+--[[
 naughty.notify({
     -- preset = naughty.config.presets.normal,
     title        = 'Hello Hackawax!',
@@ -92,8 +102,8 @@ naughty.notify({
         return gears.shape.infobubble(cr, w, h, dpi(20), dpi(10), w/2 - dpi(10))
     end,
 })
-
 -- }}}
+--]]
 
 -- {{{ Variable definitions
 local themes_path = gfs.get_configuration_dir() .. "themes"
@@ -234,8 +244,12 @@ awful.screen.connect_for_each_screen(function(s) beautiful.on_screen_connect(s) 
 -- {{{ Mouse bindings
 root.buttons(my_table.join(
     awful.button({ }, 3, function() awful.util.mymainmenu:toggle() end),
-    awful.button({ }, 4, awful.tag.viewnext),
-    awful.button({ }, 5, awful.tag.viewprev)
+    -- awful.button({ }, 4, awful.tag.viewnext),
+    -- awful.button({ }, 5, awful.tag.viewprev),
+
+    -- testing side buttons
+    awful.button({ }, 8, awful.tag.viewprev),
+    awful.button({ }, 9, awful.tag.viewnext)
 ))
 -- }}}
 
@@ -323,6 +337,8 @@ globalkeys = my_table.join(
         { description = "show the menubar", group = "launcher" }),
 
     -- Toggle wibox visibility
+    -- this way if more than one screen we toggle mywibox
+    -- on screen focused
     awful.key({ modkey }, "b", function()
         mouse.screen.mywibox.visible = not mouse.screen.mywibox.visible
     end,
@@ -359,12 +375,27 @@ clientkeys = my_table.join(
         { description = "toggle fullscreen", group = "client" }),
     awful.key({ modkey, "Shift"   }, "c", function(c) c:kill() end,
         { description = "close", group = "client" }),
+    awful.key({ altkey, "Shift"   }, "c", function()
+        local clients = awful.screen.focused().clients
+        for _,c in pairs(clients) do c:kill() end
+    end,
+        { description = "grab all clients in the current tag and kill em all", group = "client" }),
+    awful.key({ altkey, "Shift"   }, "Escape", function()
+        local clients = client.get()
+        for _,c in pairs(clients) do c:kill() end
+    end,
+        { description = "grab all clients from all screens and kill em all", group = "client" }),
+
     awful.key({ modkey, "Control" }, "space",  awful.client.floating.toggle,
         { description = "toggle floating", group = "client" }),
     awful.key({ modkey, "Control" }, "Return", function(c) c:swap(awful.client.getmaster()) end,
         { description = "move to master", group = "client" }),
     awful.key({ modkey,           }, "o", function(c) c:move_to_screen() end,
         { description = "move to screen", group = "client" }),
+    -- Test
+    -- when we're on middle screen move to the right screen
+    awful.key({ modkey, "Shift"   }, "o", function(c) c:move_to_screen(-1) end,
+        { description = "move to right screen", group = "client" }),
     awful.key({ modkey,           }, "t", function(c) c.ontop = not c.ontop end,
         { description = "toggle keep on top", group = "client" }),
     -- The client currently has the input focus, so it cannot be
@@ -483,6 +514,7 @@ clientbuttons = my_table.join(
 )
 
 -- Set keys
+-- root.cursor("pirate")
 root.keys(globalkeys)
 -- }}}
 
@@ -509,6 +541,15 @@ awful.rules.rules = {
     {
         rule_any = { type = { "normal", "dialog" } },
         properties = { titlebars_enabled = true }
+    },
+    -- MPlayer
+    {
+        rule = { class = "MPlayer" },
+        properties = { floating = true }
+    },
+    {
+        rule = { class = "SMPlayer" },
+        properties = { floating = true }
     },
     -- Gimp
     {
@@ -549,8 +590,8 @@ client.connect_signal("manage", function(c)
       and not c.size_hints.user_position
       and not c.size_hints.program_position then
         -- Prevent clients from being unreachable after screen count changes.
-        -- awful.placement.no_offscreen(c)
-        awful.placement.no_offscreen(c, { honor_workarea = true, margins = dpi(40) })
+        awful.placement.no_offscreen(c)
+        -- awful.placement.no_offscreen(c, { honor_workarea = true, margin = dpi(40) })
     end
 end)
 
