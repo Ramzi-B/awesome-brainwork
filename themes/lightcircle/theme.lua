@@ -11,6 +11,9 @@ local my_table                                      = awful.util.table or gears.
 local surface                                       = gears.surface.load_from_shape
 local shape                                         = gears.shape
 
+--
+local naughty                                       = require("naughty")
+
 local theme                                         = {}
 -- theme.confdir                                    = gfs.get_xdg_config_home() .. "awesome/themes/lightcircle"
 theme.confdir                                       = gfs.get_configuration_dir() .. "themes/lightcircle"
@@ -48,11 +51,11 @@ theme.border_marked                                 = "#91231c"
 theme.border_width                                  = dpi(1)
 theme.maximized_hide_border                         = true
 
-theme.useless_gap                                   = dpi(4)
+theme.useless_gap                                   = dpi(5)
 theme.gap_single_client                             = true
 
 theme.bg_systray                                    = theme.bg_normal
-theme.systray_icon_spacing                          = dpi(3)
+theme.systray_icon_spacing                          = dpi(4)
 
 theme.taglist_bg_focus                              = theme.colors.transparent
 theme.taglist_fg_focus                              = theme.colors.orangedeep
@@ -65,26 +68,20 @@ theme.tasklist_plain_task_name                      = false
 theme.tasklist_disable_task_name                    = true
 
 theme.awesome_icon                                  = theme.confdir .. "/icons/awesome.png"
-theme.arch_icon                                     = theme.confdir .. "/icons/arch.png"
+-- theme.arch_icon                                     = theme.confdir .. "/icons/arch.png"
+theme.arch_icon                                     = theme.confdir .. "/icons/menu.svg"
 
 theme.menu_submenu_icon                             = theme.confdir .. "/icons/submenuplay.png"
 theme.menu_height                                   = dpi(16)
 theme.menu_width                                    = dpi(120)
 theme.menu_border_width                             = dpi(0)
 
-theme.hotkeys_font                                  = "TerminessTTFNerdFontMono 12"
+theme.hotkeys_font                                  = "TerminessTTFNerdFontMono bold 12"
 theme.hotkeys_description_font                      = "TerminessTTFNerdFontMono 10"
 theme.hotkeys_shape                                 = shape.rounded_rect
 theme.hotkeys_border_color                          = theme.border_focus
 theme.hotkeys_border_width                          = dpi(2)
-theme.hotkeys_group_margin                          = dpi(40)
-
-theme.notification_shape                            = shape.infobubble
-theme.notification_margin                           = dpi(20)
-theme.notification_padding                          = dpi(5)
-theme.notification_bg                               = theme.colors.bluegray
-theme.notification_fg                               = "#D26937"
--- theme.notification_fg                               = "#4C566A"
+theme.hotkeys_group_margin                          = dpi(20)
 
 theme.taglist_squares_sel                           = surface(dpi(5), dpi(5), shape.circle, theme.taglist_fg_focus)
 -- theme.taglist_squares_sel                           = surface(dpi(25), dpi(4), shape.rounded_bar, theme.taglist_fg_focus)
@@ -129,7 +126,7 @@ theme.layout_cornersw                               = theme.confdir .. "/layouts
 theme.layout_cornerse                               = theme.confdir .. "/layouts/cornerse.svg"
 
 -- Widget
-theme.widget_clock                                  = theme.confdir .. "/icons/clock.png"
+theme.widget_clock                                  = theme.confdir .. "/icons/clock.svg"
 
 -- Create a textclock widget
 os.setlocale(os.getenv("LANG"))
@@ -171,6 +168,10 @@ local slider = wibox.widget {
 --]]
 
 function theme.on_screen_connect(s)
+
+    -- test screen
+    naughty.notify({ text = "Screen___" .. s.index })
+
     -- If wallpaper is a function, call it with the screen
     local wallpaper = theme.wallpaper
     if type(wallpaper) == "function" then wallpaper = wallpaper(s) end
@@ -257,18 +258,19 @@ function theme.on_screen_connect(s)
     --]]
 
     -- Create the wibox
-    s.mywibox = awful.wibar({ screen = s,  position = "top", height = dpi(18) })
+    s.mywibox = awful.wibar({ screen = s,  position = "top", height = dpi(20) })
 
     -- Add widgets to the wibox
     s.mywibox:setup {
-        { -- Left widgets
+        -- Left widgets
+        {
             layout = wibox.layout.fixed.horizontal,
-            {
+            { -- mylauncher
                 layout = wibox.container.background,
                 bg     = theme.colors.bluegray,
                 {
                     layout  = wibox.container.margin,
-                    margins = dpi(2),
+                    margins = dpi(4),
                     mylauncher,
                 },
                 shape              = shape.rounded_rect,
@@ -278,43 +280,74 @@ function theme.on_screen_connect(s)
             s.mytaglist,
             s.mypromptbox
         },
-        -- s.mytasklist -- Middle widget
-        {
+        -- Middle widget
+        { -- s.mytasklist
             layout = wibox.container.background,
             bg     = theme.colors.bluegray,
             {
                 layout  = wibox.container.margin,
-                margins = dpi(4),
+                margins = dpi(3),
                 s.mytasklist,
             },
             shape              = shape.rounded_bar,
             shape_border_width = dpi(1),
             shape_border_color = theme.colors.bluegray,
         },
-        { -- Right widgets
+        -- Right widgets
+        {
             layout = wibox.layout.fixed.horizontal,
             -- mykeyboardlayout,
             -- slider,
-            wibox.widget.systray(),
-            clockicon,
-            {
+            -- wibox.widget.systray(),
+            { -- systray
                 layout = awful.widget.only_on_screen,
-                screen = 1, -- Only display on screen 1
+                screen = "primary" or 1, -- Only display on screen 1
                 {
                     layout = wibox.container.background,
                     bg     = theme.colors.bluegray,
                     {
                         layout  = wibox.container.margin,
-                        margins = dpi(1),
-                        mytextclock,
+                        margins = dpi(3),
+                        wibox.widget.systray(),
                     },
                     shape              = shape.rounded_bar,
                     shape_border_width = dpi(1),
                     shape_border_color = theme.colors.bluegray,
                 }
             },
-            -- s.mylayoutbox
-            {
+            { -- clockicon
+                layout = awful.widget.only_on_screen,
+                screen = "primary" or 1, -- Only display on screen 1
+                {
+                    layout = wibox.container.background,
+                    bg     = theme.colors.bluegray,
+                    {
+                        layout  = wibox.container.margin,
+                        margins = dpi(4),
+                        clockicon,
+                    },
+                    shape              = shape.rounded_bar,
+                    shape_border_width = dpi(1),
+                    shape_border_color = theme.colors.bluegray,
+                }
+            },
+            { -- mytextclock
+                layout = awful.widget.only_on_screen,
+                screen = "primary" or 1, -- Only display on screen 1
+                {
+                    layout = wibox.container.background,
+                    bg     = theme.colors.bluegray,
+                    {
+                        layout  = wibox.container.margin,
+                        margins = dpi(4),
+                        mytextclock,
+                    },
+                    shape              = shape.rounded_bar,
+                    shape_border_width = dpi(1),
+                    shape_border_color = theme.colors.bluegray,
+                },
+            },
+            { -- s.mylayoutbox
                 layout = wibox.container.background,
                 bg     = theme.colors.bluegray,
                 {

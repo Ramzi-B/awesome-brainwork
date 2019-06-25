@@ -1,7 +1,9 @@
 -- If LuaRocks is installed, make sure that packages installed through it are
 -- found (e.g. lgi). If LuaRocks is not installed, do nothing.
 pcall(require, "luarocks.loader")
+-- pcall(function() jit.on() end)
 
+local os = os
 -- {{{ Standard awesome library
 local gears         = require("gears")
 local awful         = require("awful")
@@ -15,79 +17,25 @@ local hotkeys_popup = require("awful.hotkeys_popup").widget
 local dpi           = beautiful.xresources.apply_dpi
 local my_table      = awful.util.table or gears.table
 local gfs           = gears.filesystem
--- local lain          = require("lain")
+-- local _Marvelous    = require("marvelous")
+local errorCheck    = require("marvelous.config.errorcheck")
 -- }}}
 
--- {{{ Error handling
--- Check if awesome encountered an error during startup and fell back to
--- another config (This code will only ever execute for the fallback config)
-if awesome.startup_errors then
-    naughty.notify({
-        preset = naughty.config.presets.critical,
-        title = "Oops, there were errors during startup!",
-        text = awesome.startup_errors
-    })
-end
-
--- Handle runtime errors after startup
-do
-    local in_error = false
-    awesome.connect_signal("debug::error", function(err)
-        -- Make sure we don't go into an endless error loop
-        if in_error then return end
-        in_error = true
-
-        naughty.notify({
-            preset = naughty.config.presets.critical,
-            title = "Oops, an error happened!",
-            text = tostring(err)
-        })
-
-        in_error = false
-    end)
-end
--- }}}
+-- Error handling
+errorCheck.watch()
 
 -- Naughty defaults
--- naughty.config.defaults.screen    = 3
-naughty.config.defaults.margin    = dpi(15)
-naughty.config.defaults.icon_size = dpi(36)
+naughty.config.defaults.screen       = 1
+naughty.config.defaults.margin       = dpi(20)
+naughty.config.defaults.icon_size    = dpi(32)
+naughty.config.defaults.border_width = dpi(2)
+-- naughty.config.defaults.border_color = "#535d6c"
+naughty.config.defaults.border_color = "#EF6C00"
 -- naughty.config.defaults.position  = "top_middle"
-
--- {{{
-naughty.notify({
-    -- preset = naughty.config.presets.critical,
-    title = "Alert!",
-    text = "You're awesome",
-    timeout = 10,
-    icon         = beautiful.icon,
-    bg           = beautiful.bg_normal,
-    fg           = beautiful.fg_normal,
-    font         = 'xos4 Terminus',
-    border_width = dpi(4),
-    border_color = "#00ff00" ,
-    shape        = gears.shape.rounded_rect
-})
-
-local text = [[ An <b>important</b>: <i>notification</i> ]]
-naughty.notify({
-    -- preset = naughty.config.presets.normal,
-    title        = 'Hello Hackawax!',
-    text         = text,
-    icon         = beautiful.icon,
-    bg           = beautiful.bg_normal,
-    fg           = beautiful.fg_normal,
-    font         = 'xos4 Terminus 12',
-    border_width = dpi(4),
-    border_color = "#ff0000",
-    -- border_color = beautiful.bg_urgent,
-    margin       = dpi(40),
-    -- shape        = gears.shape.rounded_rect,
-    shape        = function(cr,w,h)
-        return gears.shape.infobubble(cr, w, h, dpi(20), dpi(10), w/2 - dpi(10))
-    end,
-})
--- }}}
+-- naughty.config.defaults.border_color = beautiful.border_focus
+naughty.config.defaults.shape        = function(cr, w, h)
+    return gears.shape.rounded_rect(cr, w, h, dpi(8))
+end
 
 -- {{{ Variable definitions
 local themes_path = gfs.get_configuration_dir() .. "themes"
@@ -228,8 +176,12 @@ awful.screen.connect_for_each_screen(function(s) beautiful.on_screen_connect(s) 
 -- {{{ Mouse bindings
 root.buttons(my_table.join(
     awful.button({ }, 3, function() awful.util.mymainmenu:toggle() end),
-    awful.button({ }, 4, awful.tag.viewnext),
-    awful.button({ }, 5, awful.tag.viewprev)
+    -- awful.button({ }, 4, awful.tag.viewnext),
+    -- awful.button({ }, 5, awful.tag.viewprev),
+
+    -- testing side buttons
+    awful.button({ }, 8, awful.tag.viewprev),
+    awful.button({ }, 9, awful.tag.viewnext)
 ))
 -- }}}
 
@@ -286,6 +238,12 @@ globalkeys = my_table.join(
         { description = "increase the number of columns", group = "layout" }),
     awful.key({ modkey, "Control" }, "l",     function() awful.tag.incncol(-1, nil, true) end,
         { description = "decrease the number of columns", group = "layout" }),
+
+    awful.key({ altkey, "Control" }, "h", function() awful.tag.incgap(dpi(1), nil) end,
+        { description = "increase the spacing between clients", group = "layout" }),
+    awful.key({ altkey, "Control" }, "l", function() awful.tag.incgap(dpi(-1), nil) end,
+        { description = "decrease the spacing between clients", group = "layout" }),
+
     awful.key({ modkey,           }, "space", function() awful.layout.inc(1) end,
         { description = "select next", group = "layout" }),
     awful.key({ modkey, "Shift"   }, "space", function() awful.layout.inc(-1) end,
@@ -297,6 +255,14 @@ globalkeys = my_table.join(
         if c then c:emit_signal("request::activate", "key.unminimize", { raise = true }) end
     end,
         { description = "restore minimized", group = "client" }),
+
+    -- minimize all clients on screnn focused
+    awful.key({ altkey, modkey    }, "m", function()
+        local clients = awful.screen.focused().clients
+        for _,c in pairs(clients) do c.minimized = true end
+    end,
+        { description = "minimize all clients on screen focused", group = "client" }
+    ),
 
     -- Prompt
     awful.key({ modkey }, "r", function() awful.screen.focused().mypromptbox:run() end,
@@ -317,6 +283,8 @@ globalkeys = my_table.join(
         { description = "show the menubar", group = "launcher" }),
 
     -- Toggle wibox visibility
+    -- this way if more than one screen we toggle mywibox
+    -- on screen focused
     awful.key({ modkey }, "b", function()
         mouse.screen.mywibox.visible = not mouse.screen.mywibox.visible
     end,
@@ -336,7 +304,16 @@ globalkeys = my_table.join(
     awful.key({ modkey }, "c", function() awful.spawn(browser) end,
         { description = "open browser", group = "launcher" }),
     awful.key({ modkey }, "a", function() awful.spawn(filemanager) end,
-        { description = "open filemanager", group = "launcher" })
+        { description = "open filemanager", group = "launcher" }),
+
+    -- Screenshot
+    -- https://github.com/Ramzi-B/MyConfig_Files/blob/master/screenshot
+    -- In this way awesome freezes for a while and leaves again
+    -- awful.key({ altkey, }, "Print", function() os.execute("screenshot") end,
+
+    -- this way the mouse cursor stays in reload mode but it works
+    awful.key({ }, "Print", function() awful.spawn("screenshot") end,
+        { description = "Take a fullcreenshot", group = "awesome" })
 )
 
 clientkeys = my_table.join(
@@ -344,12 +321,27 @@ clientkeys = my_table.join(
         { description = "toggle fullscreen", group = "client" }),
     awful.key({ modkey, "Shift"   }, "c", function(c) c:kill() end,
         { description = "close", group = "client" }),
+    awful.key({ altkey, "Shift"   }, "c", function()
+        local clients = awful.screen.focused().clients
+        for _,c in pairs(clients) do c:kill() end
+    end,
+        { description = "grab all clients in the current tag and kill em all", group = "client" }),
+    awful.key({ altkey, "Shift"   }, "Escape", function()
+        local clients = client.get()
+        for _,c in pairs(clients) do c:kill() end
+    end,
+        { description = "grab all clients from all screens and kill em all", group = "client" }),
+
     awful.key({ modkey, "Control" }, "space",  awful.client.floating.toggle,
         { description = "toggle floating", group = "client" }),
     awful.key({ modkey, "Control" }, "Return", function(c) c:swap(awful.client.getmaster()) end,
         { description = "move to master", group = "client" }),
     awful.key({ modkey,           }, "o", function(c) c:move_to_screen() end,
         { description = "move to screen", group = "client" }),
+    -- Test
+    -- when we're on middle screen move to the right screen
+    awful.key({ modkey, "Shift"   }, "o", function(c) c:move_to_screen(-1) end,
+        { description = "move to right screen", group = "client" }),
     awful.key({ modkey,           }, "t", function(c) c.ontop = not c.ontop end,
         { description = "toggle keep on top", group = "client" }),
     -- The client currently has the input focus, so it cannot be
@@ -365,49 +357,49 @@ clientkeys = my_table.join(
 
     -- Move and resize only floating clients
     -- Move client left/right/top/bottom
-    awful.key({ altkey }, "Down", function(c) c:relative_move(0, 20, 0, 0) end,
+    awful.key({ altkey }, "Down", function(c) c:relative_move(0, dpi(20), 0, 0) end,
         { description = "move client down", group = "client floaters resize and move" }),
-    awful.key({ altkey }, "Up", function(c) c:relative_move(0, -20, 0, 0) end,
+    awful.key({ altkey }, "Up", function(c) c:relative_move(0, dpi(-20), 0, 0) end,
         { description = "move client up", group = "client floaters resize and move" }),
-    awful.key({ altkey }, "Left", function(c) c:relative_move(-20, 0, 0, 0) end,
+    awful.key({ altkey }, "Left", function(c) c:relative_move(dpi(-20), 0, 0, 0) end,
         { description = "move client left", group = "client floaters resize and move" }),
-    awful.key({ altkey }, "Right", function(c) c:relative_move( 20, 0, 0, 0) end,
+    awful.key({ altkey }, "Right", function(c) c:relative_move(dpi(20), 0, 0, 0) end,
         { description = "move client right", group = "client floaters resize and move" }),
     -- Resize both client width/height
-    awful.key({ altkey }, "Next", function(c) c:relative_move(20, 20, -40, -40) end,
+    awful.key({ altkey }, "Next", function(c) c:relative_move(dpi(20), dpi(20), dpi(-40), dpi(-40)) end,
         { description = "decrease client width and height size", group = "client floaters resize and move" }),
-    awful.key({ altkey }, "Prior", function(c) c:relative_move(-20, -20, 40, 40) end,
+    awful.key({ altkey }, "Prior", function(c) c:relative_move(dpi(-20), dpi(-20), dpi(40), dpi(40)) end,
         { description = "increase client width and height size", group = "client floaters resize and move" }),
     -- Resize client height
-    awful.key({ altkey, "Shift" }, "Next", function(c) c:relative_move(0, 20, 0,-40) end,
+    awful.key({ altkey, "Shift" }, "Next", function(c) c:relative_move(0, dpi(20), 0,dpi(-40)) end,
         { description = "decrease client height size", group = "client floaters resize and move" }),
-    awful.key({ altkey, "Shift" }, "Prior", function(c) c:relative_move(0, -20, 0, 40) end,
+    awful.key({ altkey, "Shift" }, "Prior", function(c) c:relative_move(0, dpi(-20), 0, dpi(40)) end,
         { description = "increase client height size", group = "client floaters resize and move" }),
     -- Resize client width
-    awful.key({ modkey, "Shift" }, "Next", function(c) c:relative_move(20, 0, -40, 0) end,
+    awful.key({ modkey, "Shift" }, "Next", function(c) c:relative_move(dpi(20), 0, dpi(-40), 0) end,
         { description = "increase client width size", group = "client floaters resize and move" }),
-    awful.key({ modkey, "Shift" }, "Prior", function(c) c:relative_move(-20, 0, 40, 0) end,
+    awful.key({ modkey, "Shift" }, "Prior", function(c) c:relative_move(dpi(-20), 0, dpi(40), 0) end,
         { description = "decrease client width size", group = "client floaters resize and move" }),
     -- Resize client side by side
     -- Resize left
-    awful.key({ altkey, "Shift" }, "Right", function(c) c:relative_move(20, 0, -20, 0) end,
+    awful.key({ altkey, "Shift" }, "Right", function(c) c:relative_move(dpi(20), 0, dpi(-20), 0) end,
         { description = "decrease client left side", group = "client floaters resize and move" }),
-    awful.key({ altkey, "Shift" }, "Left", function(c) c:relative_move(-20, 0, 20, 0) end,
+    awful.key({ altkey, "Shift" }, "Left", function(c) c:relative_move(dpi(-20), 0, dpi(20), 0) end,
         { description = "increase client left side", group = "client floaters resize and move" }),
     -- Resize right
-    awful.key({ modkey, "Shift" }, "Left", function(c) c:relative_move(0, 0, -20, 0) end,
+    awful.key({ modkey, "Shift" }, "Left", function(c) c:relative_move(0, 0, dpi(-20), 0) end,
         { description = "decrease client right side", group = "client floaters resize and move" }),
-    awful.key({ modkey, "Shift" }, "Right", function(c) c:relative_move(0, 0, 20, 0) end,
+    awful.key({ modkey, "Shift" }, "Right", function(c) c:relative_move(0, 0, dpi(20), 0) end,
         { description = "increase client right side", group = "client floaters resize and move" }),
     -- Resize top
-    awful.key({ altkey, "Shift" }, "Down", function(c) c:relative_move(0, 20, 0, -20) end,
+    awful.key({ altkey, "Shift" }, "Down", function(c) c:relative_move(0, dpi(20), 0, dpi(-20)) end,
         { description = "decrease client top side", group = "client floaters resize and move" }),
-    awful.key({ altkey, "Shift" }, "Up", function(c) c:relative_move(0, -20, 0, 20) end,
+    awful.key({ altkey, "Shift" }, "Up", function(c) c:relative_move(0, dpi(-20), 0, dpi(20)) end,
         { description = "increase client top side", group = "client floaters resize and move" }),
     -- Resize bottom
-    awful.key({ modkey, "Shift" }, "Up", function(c) c:relative_move(0, 0, 0, -20) end,
+    awful.key({ modkey, "Shift" }, "Up", function(c) c:relative_move(0, 0, 0, dpi(-20)) end,
         { description = "decrease bottom left side", group = "client floaters resize and move" }),
-    awful.key({ modkey, "Shift" }, "Down", function(c) c:relative_move(0, 0, 0, 20) end,
+    awful.key({ modkey, "Shift" }, "Down", function(c) c:relative_move(0, 0, 0, dpi(20)) end,
         { description = "increase client bottom side", group = "client floaters resize and move" }),
 
     -- Toggle titlebar
@@ -468,6 +460,7 @@ clientbuttons = my_table.join(
 )
 
 -- Set keys
+-- root.cursor("pirate")
 root.keys(globalkeys)
 -- }}}
 
@@ -494,6 +487,15 @@ awful.rules.rules = {
     {
         rule_any = { type = { "normal", "dialog" } },
         properties = { titlebars_enabled = true }
+    },
+    -- MPlayer
+    {
+        rule = { class = "MPlayer" },
+        properties = { floating = true }
+    },
+    {
+        rule = { class = "SMPlayer" },
+        properties = { floating = true }
     },
     -- Gimp
     {
