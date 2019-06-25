@@ -17,93 +17,25 @@ local hotkeys_popup = require("awful.hotkeys_popup").widget
 local dpi           = beautiful.xresources.apply_dpi
 local my_table      = awful.util.table or gears.table
 local gfs           = gears.filesystem
--- local lain          = require("lain")
+-- local _Marvelous    = require("marvelous")
+local errorCheck    = require("marvelous.config.errorcheck")
 -- }}}
 
--- {{{ Error handling
--- Check if awesome encountered an error during startup and fell back to
--- another config (This code will only ever execute for the fallback config)
-if awesome.startup_errors then
-    naughty.notify({
-        preset = naughty.config.presets.critical,
-        title = "Oops, there were errors during startup!",
-        text = awesome.startup_errors
-    })
-end
-
--- Handle runtime errors after startup
-do
-    local in_error = false
-    awesome.connect_signal("debug::error", function(err)
-        -- Make sure we don't go into an endless error loop
-        if in_error then return end
-        in_error = true
-
-        naughty.notify({
-            preset = naughty.config.presets.critical,
-            title = "Oops, an error happened!",
-            text = tostring(err)
-        })
-
-        in_error = false
-    end)
-end
--- }}}
+-- Error handling
+errorCheck.watch()
 
 -- Naughty defaults
--- naughty.config.defaults.screen    = 3
-naughty.config.defaults.margin       = dpi(35)
-naughty.config.defaults.icon_size    = dpi(64)
-naughty.config.defaults.border_width = dpi(1)
--- naughty.config.defaults.border_color = beautiful.bg_normal
+naughty.config.defaults.screen       = 1
+naughty.config.defaults.margin       = dpi(20)
+naughty.config.defaults.icon_size    = dpi(32)
+naughty.config.defaults.border_width = dpi(2)
+-- naughty.config.defaults.border_color = "#535d6c"
 naughty.config.defaults.border_color = "#EF6C00"
 -- naughty.config.defaults.position  = "top_middle"
+-- naughty.config.defaults.border_color = beautiful.border_focus
 naughty.config.defaults.shape        = function(cr, w, h)
     return gears.shape.rounded_rect(cr, w, h, dpi(8))
 end
-
---[[ -- Test
--- {{{
-naughty.notify({
-    -- preset = naughty.config.presets.critical,
-    title = "Alert!",
-    text = "You're awesome",
-    timeout = 10,
-    icon         = beautiful.icon,
-    bg           = beautiful.bg_normal,
-    fg           = beautiful.fg_normal,
-    font         = 'xos4 Terminus',
-    margin       = dpi(40),
-    border_width = dpi(4),
-    border_color = "#00ff00" ,
-    -- shape        = gears.shape.rounded_rect
-    shape        = function(cr, w, h)
-        return gears.shape.infobubble(cr, w, h, dpi(10), dpi(10), w/2 - dpi(10))
-    end,
-})
-
-local text = [[ An <b>important</b>: <i>notification</i> ]]
---]]
---[[
-naughty.notify({
-    -- preset = naughty.config.presets.normal,
-    title        = 'Hello Hackawax!',
-    text         = text,
-    icon         = beautiful.icon,
-    bg           = beautiful.bg_normal,
-    fg           = beautiful.fg_normal,
-    font         = 'xos4 Terminus 12',
-    border_width = dpi(4),
-    border_color = "#ff0000",
---    border_color = beautiful.bg_urgent,
-    margin       = dpi(40),
-    -- shape        = gears.shape.rounded_rect,
-    shape        = function(cr, w, h)
-        return gears.shape.infobubble(cr, w, h, dpi(20), dpi(10), w/2 - dpi(10))
-    end,
-})
--- }}}
---]]
 
 -- {{{ Variable definitions
 local themes_path = gfs.get_configuration_dir() .. "themes"
@@ -306,6 +238,12 @@ globalkeys = my_table.join(
         { description = "increase the number of columns", group = "layout" }),
     awful.key({ modkey, "Control" }, "l",     function() awful.tag.incncol(-1, nil, true) end,
         { description = "decrease the number of columns", group = "layout" }),
+
+    awful.key({ altkey, "Control" }, "h", function() awful.tag.incgap(dpi(1), nil) end,
+        { description = "increase the spacing between clients", group = "layout" }),
+    awful.key({ altkey, "Control" }, "l", function() awful.tag.incgap(dpi(-1), nil) end,
+        { description = "decrease the spacing between clients", group = "layout" }),
+
     awful.key({ modkey,           }, "space", function() awful.layout.inc(1) end,
         { description = "select next", group = "layout" }),
     awful.key({ modkey, "Shift"   }, "space", function() awful.layout.inc(-1) end,
@@ -317,6 +255,14 @@ globalkeys = my_table.join(
         if c then c:emit_signal("request::activate", "key.unminimize", { raise = true }) end
     end,
         { description = "restore minimized", group = "client" }),
+
+    -- minimize all clients on screnn focused
+    awful.key({ altkey, modkey    }, "m", function()
+        local clients = awful.screen.focused().clients
+        for _,c in pairs(clients) do c.minimized = true end
+    end,
+        { description = "minimize all clients on screen focused", group = "client" }
+    ),
 
     -- Prompt
     awful.key({ modkey }, "r", function() awful.screen.focused().mypromptbox:run() end,
@@ -590,8 +536,8 @@ client.connect_signal("manage", function(c)
       and not c.size_hints.user_position
       and not c.size_hints.program_position then
         -- Prevent clients from being unreachable after screen count changes.
-        awful.placement.no_offscreen(c)
-        -- awful.placement.no_offscreen(c, { honor_workarea = true, margin = dpi(40) })
+        -- awful.placement.no_offscreen(c)
+        awful.placement.no_offscreen(c, { honor_workarea = true, margins = dpi(40) })
     end
 end)
 

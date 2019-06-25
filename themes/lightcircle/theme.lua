@@ -11,6 +11,9 @@ local my_table                                      = awful.util.table or gears.
 local surface                                       = gears.surface.load_from_shape
 local shape                                         = gears.shape
 
+--
+local naughty                                       = require("naughty")
+
 local theme                                         = {}
 -- theme.confdir                                    = gfs.get_xdg_config_home() .. "awesome/themes/lightcircle"
 theme.confdir                                       = gfs.get_configuration_dir() .. "themes/lightcircle"
@@ -48,11 +51,11 @@ theme.border_marked                                 = "#91231c"
 theme.border_width                                  = dpi(1)
 theme.maximized_hide_border                         = true
 
-theme.useless_gap                                   = dpi(4)
+theme.useless_gap                                   = dpi(5)
 theme.gap_single_client                             = true
 
 theme.bg_systray                                    = theme.bg_normal
-theme.systray_icon_spacing                          = dpi(3)
+theme.systray_icon_spacing                          = dpi(4)
 
 theme.taglist_bg_focus                              = theme.colors.transparent
 theme.taglist_fg_focus                              = theme.colors.orangedeep
@@ -73,19 +76,12 @@ theme.menu_height                                   = dpi(16)
 theme.menu_width                                    = dpi(120)
 theme.menu_border_width                             = dpi(0)
 
-theme.hotkeys_font                                  = "TerminessTTFNerdFontMono 12"
+theme.hotkeys_font                                  = "TerminessTTFNerdFontMono bold 12"
 theme.hotkeys_description_font                      = "TerminessTTFNerdFontMono 10"
 theme.hotkeys_shape                                 = shape.rounded_rect
 theme.hotkeys_border_color                          = theme.border_focus
 theme.hotkeys_border_width                          = dpi(2)
-theme.hotkeys_group_margin                          = dpi(40)
-
-theme.notification_shape                            = shape.infobubble
-theme.notification_margin                           = dpi(20)
-theme.notification_padding                          = dpi(5)
-theme.notification_bg                               = theme.colors.bluegray
-theme.notification_fg                               = "#D26937"
--- theme.notification_fg                               = "#4C566A"
+theme.hotkeys_group_margin                          = dpi(20)
 
 theme.taglist_squares_sel                           = surface(dpi(5), dpi(5), shape.circle, theme.taglist_fg_focus)
 -- theme.taglist_squares_sel                           = surface(dpi(25), dpi(4), shape.rounded_bar, theme.taglist_fg_focus)
@@ -172,6 +168,10 @@ local slider = wibox.widget {
 --]]
 
 function theme.on_screen_connect(s)
+
+    -- test screen
+    naughty.notify({ text = "Screen___" .. s.index })
+
     -- If wallpaper is a function, call it with the screen
     local wallpaper = theme.wallpaper
     if type(wallpaper) == "function" then wallpaper = wallpaper(s) end
